@@ -183,5 +183,4 @@ More information the LL2 API, and about The Space Devs is here:
 
 ## License:
 > Copyright ©️ 2023 Scott Cummings </br>
-> GNU General Public License V3 </br>
-> https://www.gnu.org/licenses/gpl-3.0.en.html
+> Apache-2.0 OR MIT
