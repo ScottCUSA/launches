@@ -1,5 +1,5 @@
 # Space Launch Notifications
-# Description:
+## Description:
 A tool which checks for upcoming space launches using the space launch library 2 (LL2) API and can send notifications if upcoming launches are found.
 
 The tool has two modes:
@@ -75,44 +75,54 @@ Launch 1:
 
 ```
 
-## Notifications Config:
+## Notification Handlers Config:
 
-This applications loads notification configurations from `./config.json` by default. The reason the configuration options are loaded from disk is to easy configuration of the tool, and to avoid storing any sensitive information inside of the project's code. In a production environment it may be preferred to use environment variables, or some other secrets vault of some kind, to store credentials rather than a file on disk.
+This applications loads it's notification handler configuration from a JSON file on disk. From `./config.json` by default. This was done to ease configuration of the tool and to avoid storing sensitive information in the code.
 
-An exception will be thrown at startup if notifications are expected but there issues loading or validating the configuration file.
+Notification Handlers are made up of a notifiation render, a notification service and it's parameters. There's more information on each in the following sections.
 
-Multiple services can be configured using the following pseudo-schema:
+__Note: An exception will be thrown at startup if there are issues loading or validating the configuration file and notifications are enabled.__
+
+Multiple handlers can be configured using the following pseudo-json-schema:
 ```json
 {
-    "notification_services": [
+    "notification_handlers": [
         {
             "service": "",
+            "render": "",    // optional
             "parameters": {}
         },
         {
-            "service": "",
-            "parameters": {}
+            "service":"",
+            "render": "",    // optional
+            "parameters":{}
         }
     ]
 }
 ```
 
-### Notification Renders
-The tool supports customizable notification renderers on a per-service basis. At this time only a `plaintext` render is currently implemented.
-Other renderers could be added with little modifiation, such as an `html` render, but they are outside the scope of the project.
+ _By default in "normal mode" a `plaintext` render is used with the `stdout` (dummy) service to output upcoming launches to the command line._
 
+ _The tool can be configured to load and process notifications using the notification handlers from the config file using the `--normal-mode-notif` flag._
 
 ### Notification Services
-The only notification services currently provided are `stdout` (a dummy service), and `email`.
-Others could be added, with little modification, such as an X (Twitter) service, or a Telegram service, but they are outside the scope of the project.
+The tool supports customizable notification services. At this time the only notification services implemented are a `stdout` service (essentially a dummy service), and an `email` service. Additional notification services could be added in the future. The tool is designed to make doing so require very refactoring.
 
-#### StdOut Service Configuration
+_Implementation detail: To add a new notification service. Create a new service class which follows the NotificationService protocol and add a case statement for it to the get_notification_service function in notification_services.py_
+
+#### Notification Renders
+The tool supports customizable notification renderers on a per-service basis. At this time only a `plaintext` render is currently implemented. Additional renderers may be added in the future. The tool is designed to make doing so require little refactoring.
+
+If no render is configured `plaintext` will be used.
+
+_Implementation detail: To add a new notification renderer. Create a new renderer class which follows the NotificationRenderer protocol and add a case statement for it to the get_notification_render function in notification_renderers.py_
+
+#### StdOut Notification Service Configuration
 There are no configurable parameters for this service.
 
-Example config:
 ```json
 {
-    "notification_services": [
+    "notification_handlers": [
         {
             "service": "stdout",
             "renderer": "plaintext", // optional
@@ -122,20 +132,19 @@ Example config:
 }
 ```
 
-#### Email Service Configuration
-The following describes the parameters for the service. The parameters are required unless otherwise noted.
+#### Email Notification Service Configuration
+The following describes the parameters for the email notification service. All parameters are required unless otherwise noted.
  - `"smtp_server"`: The network hostname of a SMTP server which can be used to send emails
  - `"smtp_port"`: The network port of the SMTP server
  - `"use_tls"`: Set to `true` if the SMTP server requires TLS authentication, `false` if not
  - `"smtp_username"`: Login username for SMTP server, if required (optional)
- - `"smtp_password"`: Login password for SMTP server, if required (optional)
+ - `"smtp_password"`: base64 encoded password for SMTP server, if required (optional)
  - `"email_sender"`: Sending email address. Used in the "From:" field of emails.
  - `"email_recipients"`: A single or list of recipient email addesses. Used in the "To:" field of emails.
 
-Example Config:
 ```json
 {
-    "notification_services": [
+    "notification_handlers": [
         {
             "service": "email",
             "renderer": "plaintext", // optional
@@ -152,10 +161,6 @@ Example Config:
     ]
 }
 ```
-
-## Design Notes:
-
-
 
 ## Space Launch Library 2 (LL2) API:
 This tool makes use of the free-tier of the Space Launch Libary 2 rest API.
