@@ -4,8 +4,7 @@ This module composes NotificationRenderers and NotificationServices and
 handles construction of both from the projects configuration
 
 Copyright ©️ 2023 Scott Cummings
-License: GNU General Public License V3
-         https://www.gnu.org/licenses/gpl-3.0.en.html
+
 """
 
 from dataclasses import dataclass

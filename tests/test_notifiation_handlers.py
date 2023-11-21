@@ -1,8 +1,7 @@
 """unittests for launches.notifications.handlers
 
 Copyright ©️ 2023 Scott Cummings
-License: GNU General Public License V3
-         https://www.gnu.org/licenses/gpl-3.0.en.html
+
 """
 import pytest
 from unittest.mock import Mock, patch

@@ -1,8 +1,7 @@
 """unittests for launches.notifications.templates
 
 Copyright ©️ 2023 Scott Cummings
-License: GNU General Public License V3
-         https://www.gnu.org/licenses/gpl-3.0.en.html
+
 """
 
 from launches.notifications.templates import format_time, localize_time, TextRenderer
