@@ -1,0 +1,30 @@
+[tool.poetry]
+name = "launches"
+version = "0.1.0"
+description = "A tool which checks for upcoming space launches using the space launch library 2 (LL2) API and can send notifications if upcoming launches are found."
+authors = ["Scott Cummings"]
+license = "GPLv3"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+Jinja2 = "^3.1.2"
+requests = "^2.31.0"
+pytz = "^2023.3.post1"
+
+[tool.poetry.group.dev.dependencies]
+pylint = "^3.0.2"
+mypy = "^1.7.0"
+types-pytz = "^2023.3.1.1"
+types-requests = "^2.31.0.10"
+freezegun = "^1.2.2"
+pytest = "^7.4.3"
+pytest-cov = "^4.1.0"
+black = "^23.11.0"
+
+[tool.poetry.scripts]
+launches = "launches.launches:main"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
