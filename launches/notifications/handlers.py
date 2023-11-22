@@ -4,7 +4,7 @@ This module composes NotificationRenderers and NotificationServices and
 handles construction of both from the projects configuration
 
 Copyright ©️ 2023 Scott Cummings
-
+SPDX-License-Identifier: MIT OR Apache-2.0
 """
 
 from dataclasses import dataclass

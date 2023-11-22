@@ -1,7 +1,7 @@
 """Space Launch Notifications - Notification Templates Module
 
 Copyright ©️ 2023 Scott Cummings
-
+SPDX-License-Identifier: MIT OR Apache-2.0
 """
 from datetime import datetime
 import logging

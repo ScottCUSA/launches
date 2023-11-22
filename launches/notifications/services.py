@@ -1,8 +1,7 @@
 """Space Launch Notifications - Notifications Services Module
 
 Copyright ©️ 2023 Scott Cummings
-
-
+SPDX-License-Identifier: MIT OR Apache-2.0
 """
 import base64
 import logging

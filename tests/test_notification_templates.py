@@ -1,7 +1,7 @@
 """unittests for launches.notifications.templates
 
 Copyright ©️ 2023 Scott Cummings
-
+SPDX-License-Identifier: MIT OR Apache-2.0
 """
 
 from launches.notifications.templates import format_time, localize_time, TextRenderer

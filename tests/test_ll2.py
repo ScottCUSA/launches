@@ -1,7 +1,7 @@
 """unittests for launches.ll2
 
 Copyright ©️ 2023 Scott Cummings
-
+SPDX-License-Identifier: MIT OR Apache-2.0
 """
 import pytest
 
