@@ -45,7 +45,7 @@ jobs:
   
     - name: Lint with pylint
       run: |
-        find . -path ./.venv -prune -name '*.py' -exec poetry run pylint {} \;
+        poetry run pylint **/*.py
 
     - name: Run mypy
       run: |
