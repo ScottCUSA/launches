@@ -42,16 +42,15 @@ jobs:
     - name: Install dependencies
       run: |
         poetry install --with github-actions
+  
+    - name: Lint with pylint
+      run: |
+        find . -name '*.py' -exec poetry run pylint {} \;
 
     - name: Run mypy
       run: |
         poetry run mypy
-  
-    - name: Lint with pylint
-      run: |
-        # stop the build if there are Python syntax errors or undefined names
-        poetry run pylint
 
     - name: Run tests
       run: |
-        poetry run pytest -sxv
+        poetry run pytest -sxv --cov
