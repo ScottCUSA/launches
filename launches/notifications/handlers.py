@@ -11,8 +11,8 @@ from dataclasses import dataclass
 import logging
 import sys
 from typing import Any
-from .templates import get_notification_renderer, NotificationRenderer
-from .services import (
+from launches.notifications.templates import get_notification_renderer, NotificationRenderer
+from launches.notifications.services import (
     NotificationService,
     get_notification_service,
 )

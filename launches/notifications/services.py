@@ -98,7 +98,7 @@ class EmailNotificationService:
 class StdOutNotificationService:
     """A "dummy" notification service which just prints to stdout"""
 
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, *_args, **_kwargs) -> None:
         logging.info("Initialized %s", self)
 
     def send(self, subject: str, body: str) -> None:

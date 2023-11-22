@@ -4,16 +4,16 @@ Copyright ©️ 2023 Scott Cummings
 SPDX-License-Identifier: MIT OR Apache-2.0
 """
 from unittest.mock import patch
-
+import base64
 from launches.notifications.services import (
     EmailNotificationService,
     StdOutNotificationService,
     get_notification_service,
 )
-import base64
 
 
 def test_get_notification_service_stdout():
+    """get_notification_service should return a StdOutNotificationService if service is stdout"""
     service_config = {
         "service": "stdout",
         "renderer": "text",
@@ -28,6 +28,7 @@ def test_get_notification_service_stdout():
 
 
 def test_get_notification_service_email():
+    """get_notification_service should return an EmailNotificationService if service is email"""
     service_config = {
         "service": "email",
         "renderer": "text",
@@ -50,6 +51,7 @@ def test_get_notification_service_email():
 
 
 def test_get_notification_service_unknown_service():
+    """get_notification_service should exit if service is unknown"""
     service_config = {
         "service": "unknown",
         "renderer": "text",
@@ -64,6 +66,7 @@ def test_get_notification_service_unknown_service():
 
 
 def test_get_notification_service_missing_fields():
+    """get_notification_service should exit if required fields are missing"""
     service_config = {
         "renderer": "text",
         "parameters": {},

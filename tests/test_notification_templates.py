@@ -4,9 +4,9 @@ Copyright ©️ 2023 Scott Cummings
 SPDX-License-Identifier: MIT OR Apache-2.0
 """
 
+from test_ll2 import VALID_LAUNCHES_DICT
 from launches.notifications.templates import format_time, localize_time, TextRenderer
 
-from test_ll2 import VALID_LAUNCHES_DICT
 
 RENDERED_BODY = """Upcoming Space Launches:
 
@@ -45,6 +45,7 @@ Launch 1:
 
 
 def test_text_renderer():
+    """TextRenderer should render a notification in the expected format"""
     text_renderer = TextRenderer()
     assert (
         text_renderer.render_subject(VALID_LAUNCHES_DICT)
@@ -54,19 +55,23 @@ def test_text_renderer():
 
 
 def test_localize_time():
+    """localize_time should return a string in the expected format"""
     assert localize_time("2023-11-19T10:52:20Z") == "2023-11-19 04:52:20 CST"
 
 
 def test_localize_unexpected_time_format():
+    """localize_time should return an empty string if the input is not in the expected format"""
     assert localize_time("2023-11-19") == ""
     assert localize_time("2023-11-19T10:52:20") == ""
     assert localize_time("2023-11-19 10:52:20") == ""
 
 
 def test_format_time():
+    """format_time should return a string in the expected format"""
     assert format_time("2023-11-19T10:52:20Z") == "2023-11-19 10:52:20 UTC"
 
 
 def test_format_unexpected_time_format():
+    """format_time should return an empty string if the input is not in the expected format"""
     assert format_time("2023-11-19 10:52:20 GMT") == ""
     assert format_time("2023-11-19 10:52:20") == ""

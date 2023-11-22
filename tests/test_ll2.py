@@ -28,7 +28,8 @@ VALID_LAUNCHES_DICT = {
             },
             "mission": {
                 "name": "Starlink Group 7-7",
-                "description": "A batch of satellites for the Starlink mega-constellation - SpaceX's project for space-based Internet communication system.",
+                "description": "A batch of satellites for the Starlink mega-constellation - "
+                "SpaceX's project for space-based Internet communication system.",
                 "type": "Communications",
                 "orbit": {"name": "Low Earth Orbit"},
                 "agencies": [
@@ -52,9 +53,11 @@ INVALID_LAUNCHES_DICT = {"error_message": "something unexpected happened"}
 
 
 def test_check_error_response():
+    """check_response should raise LL2RequestError if response is an error"""
     with pytest.raises(LL2RequestError):
         check_response(INVALID_LAUNCHES_DICT)
 
 
 def test_check_valid_response():
+    """check_response should return None if response is valid"""
     assert check_response(VALID_LAUNCHES_DICT) is None
