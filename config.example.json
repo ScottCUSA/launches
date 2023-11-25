@@ -1,0 +1,24 @@
+{
+    "notification_handlers": [
+        {
+            "service": "stdout",
+            "renderer": "plaintext",
+            "parameters": {}
+        },
+        {
+            "service": "email",
+            "renderer": "plaintext",
+            "parameters": {
+                "smtp_server": "smtp-mail.outlook.com",
+                "smtp_port": 587,
+                "use_tls": true,
+                "smtp_username": "email@outlook.com",
+                "smtp_password": "base64encodedpassword",
+                "sender": "email@outlook.com",
+                "recipients": [
+                    "email@outlook.com"
+                ]
+            }
+        }
+    ]
+}
