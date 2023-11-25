@@ -11,7 +11,10 @@ from dataclasses import dataclass
 import logging
 import sys
 from typing import Any
-from launches.notifications.templates import get_notification_renderer, NotificationRenderer
+from launches.notifications.templates import (
+    get_notification_renderer,
+    NotificationRenderer,
+)
 from launches.notifications.services import (
     NotificationService,
     get_notification_service,
@@ -57,7 +60,7 @@ def get_notification_handlers(
             sys.exit(1)
         try:
             renderer_name = (
-                handler_config["render"] if "render" in handler_config else ""
+                handler_config["renderer"] if "renderer" in handler_config else ""
             )
             renderer = get_notification_renderer(renderer_name)
             service = get_notification_service(handler_config)

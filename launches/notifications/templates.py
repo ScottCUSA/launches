@@ -62,7 +62,7 @@ def get_notification_renderer(renderer: str) -> NotificationRenderer:
             return TextRenderer()
         case _:
             # default to TextRender
-            logging.warning("Unknown renderer: %s", renderer)
+            logging.warning("Unknown renderer: '%s'", renderer)
             return TextRenderer()
 
 

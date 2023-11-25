@@ -35,9 +35,11 @@ class EmailNotificationService:
         self.server: str = kwargs["smtp_server"]
         self.port: int = kwargs["smtp_port"]
         self.use_tls: bool = kwargs["use_tls"]
-        if "username" in kwargs and "password" in kwargs:
-            self.username: str = kwargs["username"]
-            self.password: str = base64.b64decode(kwargs["password"]).decode("utf-8")
+        if "smtp_username" in kwargs and "smtp_password" in kwargs:
+            self.username: str = kwargs["smtp_username"]
+            self.password: str = base64.b64decode(kwargs["smtp_password"]).decode(
+                "utf-8"
+            )
         self.sender: str = kwargs["sender"]
         self.recipients: list[str] | str = kwargs["recipients"]
         logging.info("Initialized %s", self)
@@ -49,7 +51,7 @@ class EmailNotificationService:
         msg["Subject"] = subject
         msg["From"] = self.sender
         if isinstance(self.recipients, list):
-            msg["To"] = ",".join(self.recipients)
+            msg["To"] = ", ".join(self.recipients)
         else:
             msg["To"] = self.recipients
         return msg.as_string()
@@ -80,9 +82,10 @@ class EmailNotificationService:
                 if self.username and self.password:
                     connection.login(self.username, self.password)
                 # actually attempt to send the email
-                connection.sendmail(
+                send_errs = connection.sendmail(
                     self.sender, self.recipients, self.get_msg(subject, body)
                 )
+                logging.debug("Send Errors: %s", send_errs)
         except (smtplib.SMTPException, ssl.SSLError) as ex:
             raise NotificationError(f"Unable to send email notification {ex}") from ex
 

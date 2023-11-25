@@ -89,12 +89,12 @@ Multiple handlers can be configured using the following pseudo-json-schema:
     "notification_handlers": [
         {
             "service": "",
-            "render": "",    // optional
+            "render": "",
             "parameters": {}
         },
         {
             "service":"",
-            "render": "",    // optional
+            "render": "",
             "parameters":{}
         }
     ]
@@ -125,7 +125,7 @@ There are no configurable parameters for this service.
     "notification_handlers": [
         {
             "service": "stdout",
-            "renderer": "plaintext", // optional
+            "renderer": "plaintext",
             "parameters": {}
         }
     ]
@@ -139,23 +139,23 @@ The following describes the parameters for the email notification service. All p
  - `"use_tls"`: Set to `true` if the SMTP server requires TLS authentication, `false` if not
  - `"smtp_username"`: Login username for SMTP server, if required (optional)
  - `"smtp_password"`: base64 encoded password for SMTP server, if required (optional)
- - `"email_sender"`: Sending email address. Used in the "From:" field of emails.
- - `"email_recipients"`: A single or list of recipient email addesses. Used in the "To:" field of emails.
+ - `"sender"`: Sending email address. Used in the "From:" field of emails.
+ - `"recipients"`: A single or list of recipient email addesses. Used in the "To:" field of emails.
 
 ```json
 {
     "notification_handlers": [
         {
             "service": "email",
-            "renderer": "plaintext", // optional
+            "renderer": "plaintext",
             "parameters": {
                 "smtp_server": "smtp-mail.outlook.com",
                 "smtp_port": 587,
                 "use_tls": true,
-                "smtp_username": "username@outlook.com",  // optional
-                "smtp_password": "password",              // optional
-                "email_sender": "username@outlook.com",
-                "email_recipients": ["username@outlook.com"]
+                "smtp_username": "email@outlook.com",  
+                "smtp_password": "base64encodedpassword",
+                "sender": "email@outlook.com",
+                "recipients": ["email@outlook.com"]
             }
         }
     ]
