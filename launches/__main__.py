@@ -116,6 +116,7 @@ def check_for_upcoming_launches(
             logging.error("Error attempting to get launches")
         else:
             print("Error attempting to get launches")
+        return
 
     if launches["count"] > 0:
         # render subject and body for notification
