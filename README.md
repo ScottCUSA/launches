@@ -89,12 +89,12 @@ Multiple handlers can be configured using the following pseudo-json-schema:
     "notification_handlers": [
         {
             "service": "",
-            "render": "",    // optional
+            "render": "",
             "parameters": {}
         },
         {
             "service":"",
-            "render": "",    // optional
+            "render": "",
             "parameters":{}
         }
     ]
@@ -125,7 +125,7 @@ There are no configurable parameters for this service.
     "notification_handlers": [
         {
             "service": "stdout",
-            "renderer": "plaintext", // optional
+            "renderer": "plaintext",
             "parameters": {}
         }
     ]
@@ -152,10 +152,10 @@ The following describes the parameters for the email notification service. All p
                 "smtp_server": "smtp-mail.outlook.com",
                 "smtp_port": 587,
                 "use_tls": true,
-                "smtp_username": "username@outlook.com",  
-                "smtp_password": "password",
-                "sender": "username@outlook.com",
-                "recipients": ["username@outlook.com"]
+                "smtp_username": "email@outlook.com",  
+                "smtp_password": "base64encodedpassword",
+                "sender": "email@outlook.com",
+                "recipients": ["email@outlook.com"]
             }
         }
     ]
