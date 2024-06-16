@@ -19,6 +19,7 @@ import schedule
 from loguru import logger
 
 from launches.config import load_config
+from launches.errors import LaunchesException
 from launches.launches import (
     get_upcoming_launches,
     send_notification,
@@ -111,16 +112,18 @@ def check_for_upcoming_launches(
 ) -> None:
     """run a check for upcoming launches"""
     logger.info("Checking for upcoming launches within a {} hour window", window_hours)
-    launches = get_upcoming_launches(window_hours)
-    if launches is None:
-        print("Error attempting to get launches")
+
+    try:
+        launches = get_upcoming_launches(window_hours)
+    except LaunchesException as ex:
+        logger.exception("Exception occured while attempting to get upcoming launches", ex)
         return
 
     if launches["count"] > 0:
         # render subject and body for notification
         send_notification(launches, notification_handlers)
     else:
-        print(f"No upcoming launches found within a {window_hours} hour window.")
+        logger.info(f"No upcoming launches found within a {window_hours} hour window.")
 
 
 def check_for_upcoming_launches_scheduled(
@@ -142,8 +145,8 @@ def check_for_upcoming_launches_scheduled(
         time.sleep(1)
 
 
-def main():
-    """entrypoint"""
+def cli():
+    """command line interface entrypoint"""
 
     # handle tool argument parsing
     args = parse_args()
@@ -176,7 +179,3 @@ def main():
         check_for_upcoming_launches_scheduled(search_window, search_repeat, notification_handlers)
     else:
         check_for_upcoming_launches(search_window, notification_handlers)
-
-
-if __name__ == "__main__":
-    main()

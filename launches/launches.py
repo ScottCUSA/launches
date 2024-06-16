@@ -31,7 +31,7 @@ def get_window_datetime(window_hours: int) -> datetime:
     return datetime.now(pytz.utc) + timedelta(hours=window_hours)
 
 
-def get_upcoming_launches(window_hours: int) -> dict[str, Any] | None:
+def get_upcoming_launches(window_hours: int) -> dict[str, Any]:
     """call ll2 get upcoming launch library"""
     window = get_window_datetime(window_hours)
     return get_upcoming_launches_within_window(window)
