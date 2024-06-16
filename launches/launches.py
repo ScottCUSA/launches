@@ -7,7 +7,7 @@ and can send a notifications if there are any upcoming space launch events.
 # README.md
 See the readme for additional documentation on the tool/service
 
-Copyright ©️ 2023 Scott Cummings
+Copyright ©️ 2024 Scott Cummings
 SPDX-License-Identifier: MIT OR Apache-2.0
 """
 

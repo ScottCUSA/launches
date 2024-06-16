@@ -1,6 +1,6 @@
 """Space Launch Notifications - Launch Library 2 Requests Module
 
-Copyright ©️ 2023 Scott Cummings
+Copyright ©️ 2024 Scott Cummings
 SPDX-License-Identifier: MIT OR Apache-2.0
 """
 
