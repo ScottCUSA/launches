@@ -4,8 +4,7 @@ Copyright ©️ 2023 Scott Cummings
 SPDX-License-Identifier: MIT OR Apache-2.0
 """
 
-from test_ll2 import VALID_LAUNCHES_DICT
-from launches.notifications.templates import format_time, localize_time, TextRenderer
+from launches.notifications.renderers import format_time, localize_time, JinjaRenderer
 
 
 RENDERED_BODY = """Upcoming Space Launches:
@@ -16,11 +15,11 @@ Launch 1:
 
     Launch Window:
         Start:
-            2023-11-19 00:55:00 CST
-            2023-11-19 06:55:00 UTC
+            Sun Nov 19 00:55:00 2023 CST
+            Sun Nov 19 06:55:00 2023 UTC
         End:
-            2023-11-19 04:52:20 CST
-            2023-11-19 10:52:20 UTC
+            Sun Nov 19 04:52:20 2023 CST
+            Sun Nov 19 10:52:20 2023 UTC
 
     Launch Service Provider:
         Name: SpaceX
@@ -44,19 +43,20 @@ Launch 1:
 """
 
 
-def test_text_renderer():
+def test_jinja_renderer(valid_launches):
     """TextRenderer should render a notification in the expected format"""
-    text_renderer = TextRenderer()
+    text_renderer = JinjaRenderer()
     assert (
-        text_renderer.render_subject(VALID_LAUNCHES_DICT)
+        text_renderer.render_subject(valid_launches)
         == "Notification for 1 Upcoming Space Launch(es)"
     )
-    assert text_renderer.render_body(VALID_LAUNCHES_DICT) == RENDERED_BODY
+    assert text_renderer.render_text_body(valid_launches) == RENDERED_BODY
+    assert text_renderer.render_formatted_body(valid_launches) is None
 
 
 def test_localize_time():
     """localize_time should return a string in the expected format"""
-    assert localize_time("2023-11-19T10:52:20Z") == "2023-11-19 04:52:20 CST"
+    assert localize_time("2023-11-19T10:52:20Z") == "Sun Nov 19 04:52:20 2023 CST"
 
 
 def test_localize_unexpected_time_format():
@@ -68,7 +68,7 @@ def test_localize_unexpected_time_format():
 
 def test_format_time():
     """format_time should return a string in the expected format"""
-    assert format_time("2023-11-19T10:52:20Z") == "2023-11-19 10:52:20 UTC"
+    assert format_time("2023-11-19T10:52:20Z") == "Sun Nov 19 10:52:20 2023 UTC"
 
 
 def test_format_unexpected_time_format():

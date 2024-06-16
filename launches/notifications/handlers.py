@@ -11,7 +11,7 @@ from dataclasses import dataclass
 from loguru import logger
 import sys
 from typing import Any
-from launches.notifications.templates import (
+from launches.notifications.renderers import (
     get_notification_renderer,
     NotificationRenderer,
 )
@@ -32,8 +32,9 @@ class NotificationHandler:
     def send(self, launches: dict[str, Any]) -> None:
         """render and send a notification from the launches dict"""
         subject = self.renderer.render_subject(launches)
-        body = self.renderer.render_body(launches)
-        self.service.send(subject, body)
+        text_body = self.renderer.render_text_body(launches)
+        formatted_body = self.renderer.render_formatted_body(launches)
+        self.service.send(subject, text_body, formatted_body)
 
 
 def get_notification_handlers(

@@ -6,7 +6,6 @@ SPDX-License-Identifier: MIT OR Apache-2.0
 
 from unittest.mock import Mock, patch
 import pytest
-from test_ll2 import VALID_LAUNCHES_DICT
 from launches.notifications.handlers import (
     NotificationHandler,
     get_notification_handlers,
@@ -21,11 +20,12 @@ def handler():
     return NotificationHandler(renderer, service)
 
 
-def test_send(handler):  # pylint: disable=redefined-outer-name
+def test_send(handler, valid_launches):  # pylint: disable=redefined-outer-name
     """send should call the renderer and service"""
-    handler.send(VALID_LAUNCHES_DICT)
-    handler.renderer.render_subject.assert_called_once_with(VALID_LAUNCHES_DICT)
-    handler.renderer.render_body.assert_called_once_with(VALID_LAUNCHES_DICT)
+    handler.send(valid_launches)
+    handler.renderer.render_subject.assert_called_once_with(valid_launches)
+    handler.renderer.render_text_body.assert_called_once_with(valid_launches)
+    handler.renderer.render_formatted_body.assert_called_once_with(valid_launches)
     handler.service.send.assert_called_once()
 
 

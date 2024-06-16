@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upcoming Space Launches</title>
+</head>
+<body>
+    <h1>Upcoming Space Launches</h1>
+    {% for launch in results %}
+    <div>
+        <h2>Launch {{ loop.index }}:</h2>
+        <p>
+            <strong>Name:</strong> {{ launch.name }}<br>
+            <strong>Status:</strong> {{ launch.status.name }}
+        </p>
+        <p>
+            <strong>Launch Window:</strong><br>
+            Start: {{ localize_time(launch.window_start) }}, {{ format_time(launch.window_start) }}<br>
+            End: {{ localize_time(launch.window_end) }}, {{ format_time(launch.window_end) }}
+        </p>
+        <p>
+            <strong>Launch Service Provider:</strong><br>
+            Name: {{ launch.launch_service_provider.name }}<br>
+            Type: {{ launch.launch_service_provider.type }}
+        </p>
+        <p>
+            <strong>Rocket:</strong> {{ launch.rocket.configuration.full_name }}
+        </p>
+        <p>
+            <strong>Mission:</strong><br>
+            Name: {{ launch.mission.name }}<br>
+            Description: {{ launch.mission.description }}<br>
+            Orbit: {{ launch.mission.orbit.name }}
+        </p>
+        <p>
+            <strong>Agencies:</strong><br>
+            {% for agency in launch.mission.agencies %}
+            Name: {{ agency.name }}<br>
+            Type: {{ agency.type }}<br>
+            Country: {{ agency.country_code }}<br>
+            {% endfor %}
+        </p>
+        <p>
+            <strong>Launch Pad:</strong><br>
+            Name: {{ launch.pad.name }}<br>
+            Location: {{ launch.pad.location.name }}
+        </p>
+    </div>
+    {% endfor %}
+</body>
+</html>
