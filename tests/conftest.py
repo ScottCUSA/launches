@@ -1,3 +1,5 @@
+from unittest.mock import MagicMock, patch
+
 import pytest
 
 VALID_LAUNCHES_DICT = {
@@ -53,3 +55,15 @@ def valid_launches():
 @pytest.fixture
 def invalid_launches():
     return INVALID_LAUNCHES_DICT
+
+
+@pytest.fixture
+def mock_requests_get():
+    with patch("requests.get") as get:
+        yield get
+
+
+@pytest.fixture
+def mock_ll2_get():
+    with patch("launches.ll2.ll2_get") as get:
+        yield get

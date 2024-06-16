@@ -14,9 +14,7 @@ from typing import Any, Protocol
 
 from loguru import logger
 
-
-class NotificationError(Exception):
-    """notification service error"""
+from launches.errors import NotificationError
 
 
 class NotificationService(Protocol):

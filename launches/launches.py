@@ -12,20 +12,16 @@ SPDX-License-Identifier: MIT OR Apache-2.0
 """
 
 import json
-import sys
 from datetime import datetime, timedelta
 from typing import Any
 
 import pytz
 from loguru import logger
 
+from launches.errors import ConfigError, NotificationError
+
 from .ll2 import get_upcoming_launches_within_window
 from .notifications.handlers import NotificationHandler
-from .notifications.services import NotificationError
-
-
-class ConfigError(Exception):
-    """project configuration error"""
 
 
 def load_config(config_path: str) -> dict[str, Any]:
@@ -60,10 +56,10 @@ def load_config(config_path: str) -> dict[str, Any]:
             config = json.load(fp)
     except IOError as ex:
         logger.error("Unable to read config file: {}", ex)
-        sys.exit(1)
+        raise ConfigError("unable to read config file")
     except json.JSONDecodeError as ex:
         logger.error("Unable to decode the config file as JSON: {}", ex)
-        sys.exit(1)
+        raise ConfigError("unable to decode config file")
 
     if (
         config is None
