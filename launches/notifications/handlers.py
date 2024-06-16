@@ -7,13 +7,15 @@ Copyright ©️ 2023 Scott Cummings
 SPDX-License-Identifier: MIT OR Apache-2.0
 """
 
-from dataclasses import dataclass
-from loguru import logger
 import sys
+from dataclasses import dataclass
 from typing import Any
+
+from loguru import logger
+
 from launches.notifications.renderers import (
-    get_notification_renderer,
     NotificationRenderer,
+    get_notification_renderer,
 )
 from launches.notifications.services import (
     NotificationService,

@@ -11,25 +11,25 @@ SPDX-License-Identifier: MIT OR Apache-2.0
 """
 
 import argparse
-import sys
-from loguru import logger
 import os
+import sys
 import time
 from typing import Any
 
 import schedule
+from loguru import logger
+
 from launches.launches import (
     get_upcoming_launches,
     load_config,
     send_notification,
 )
-
 from launches.notifications.handlers import (
     NotificationHandler,
     get_notification_handlers,
 )
-from launches.notifications.services import StdOutNotificationService
 from launches.notifications.renderers import JinjaRenderer
+from launches.notifications.services import StdOutNotificationService
 
 DEFAULT_CONFIG_PATH = "config.json"
 DEFAULT_REPEAT_HOURS = 24  # number of hours between checks for upcoming launches

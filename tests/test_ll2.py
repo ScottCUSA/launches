@@ -6,7 +6,7 @@ SPDX-License-Identifier: MIT OR Apache-2.0
 
 import pytest
 
-from launches.ll2 import check_response, LL2RequestError
+from launches.ll2 import LL2RequestError, check_response
 
 
 def test_check_valid_response(valid_launches):

@@ -5,11 +5,11 @@ SPDX-License-Identifier: MIT OR Apache-2.0
 """
 
 from datetime import datetime
-from loguru import logger
 from typing import Any, Protocol
 
 import pytz
 from jinja2 import Environment, PackageLoader, Template, select_autoescape
+from loguru import logger
 
 from launches.ll2 import LAUNCH_DT_FORMAT
 

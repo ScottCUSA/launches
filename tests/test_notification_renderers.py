@@ -4,8 +4,7 @@ Copyright ©️ 2023 Scott Cummings
 SPDX-License-Identifier: MIT OR Apache-2.0
 """
 
-from launches.notifications.renderers import format_time, localize_time, JinjaRenderer
-
+from launches.notifications.renderers import JinjaRenderer, format_time, localize_time
 
 RENDERED_BODY = """Upcoming Space Launches:
 

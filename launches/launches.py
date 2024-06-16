@@ -12,16 +12,16 @@ SPDX-License-Identifier: MIT OR Apache-2.0
 """
 
 import json
-from loguru import logger
 import sys
 from datetime import datetime, timedelta
 from typing import Any
 
 import pytz
+from loguru import logger
 
 from .ll2 import get_upcoming_launches_within_window
-from .notifications.services import NotificationError
 from .notifications.handlers import NotificationHandler
+from .notifications.services import NotificationError
 
 
 class ConfigError(Exception):
