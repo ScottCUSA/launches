@@ -3,16 +3,16 @@
 This module composes NotificationRenderers and NotificationServices and
 handles construction of both from the projects configuration
 
-Copyright ©️ 2023 Scott Cummings
+Copyright ©️ 2024 Scott Cummings
 SPDX-License-Identifier: MIT OR Apache-2.0
 """
 
-import sys
 from dataclasses import dataclass
 from typing import Any
 
 from loguru import logger
 
+from launches.errors import ConfigError
 from launches.notifications.renderers import (
     NotificationRenderer,
     get_notification_renderer,
@@ -60,7 +60,7 @@ def get_notification_handlers(
     for handler_config in handler_configs:
         if "service" not in handler_config or "parameters" not in handler_config:
             logger.error("Handler config missing required fields")
-            sys.exit(1)
+            raise ConfigError()
         try:
             renderer_name = handler_config["renderer"] if "renderer" in handler_config else ""
             renderer = get_notification_renderer(renderer_name)
@@ -68,10 +68,10 @@ def get_notification_handlers(
             notification_handlers.append(NotificationHandler(renderer, service))
         except (ValueError, KeyError) as ex:
             logger.error("Unable to load notification handlers: {}", ex)
-            sys.exit(1)
+            raise ConfigError()
 
     if len(notification_handlers) == 0:
         logger.error("Unable to load any notification handlers")
-        sys.exit(1)
+        raise ConfigError()
 
     return notification_handlers

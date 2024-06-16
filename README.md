@@ -182,5 +182,5 @@ More information the LL2 API, and about The Space Devs is here:
  - https://www.patreon.com/TheSpaceDevs
 
 ## License:
-> Copyright ©️ 2023 Scott Cummings </br>
+> Copyright ©️ 2024 Scott Cummings </br>
 > Apache-2.0 OR MIT

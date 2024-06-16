@@ -1,6 +1,6 @@
 """Space Launch Notifications - Launch Library 2 Requests Module
 
-Copyright ©️ 2023 Scott Cummings
+Copyright ©️ 2024 Scott Cummings
 SPDX-License-Identifier: MIT OR Apache-2.0
 """
 
@@ -11,6 +11,8 @@ from typing import Any
 import requests
 from loguru import logger
 
+from launches.errors import LL2RequestError
+
 LL2_ENV = "prod"
 LL2_API_URL = {
     "prod": "https://ll.thespacedevs.com/2.2.0/",
@@ -19,10 +21,6 @@ LL2_API_URL = {
 LL2_UPCOMING_ENDPOINT = "launch/upcoming/"
 REQUEST_TIMEOUT = 30
 LAUNCH_DT_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
-
-
-class LL2RequestError(Exception):
-    """launch library request error"""
 
 
 def ll2_get(endpoint: str, parameters: dict) -> requests.Response:

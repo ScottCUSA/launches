@@ -1,6 +1,6 @@
 """Space Launch Notifications - Notifications Services Module
 
-Copyright ©️ 2023 Scott Cummings
+Copyright ©️ 2024 Scott Cummings
 SPDX-License-Identifier: MIT OR Apache-2.0
 """
 
@@ -14,9 +14,7 @@ from typing import Any, Protocol
 
 from loguru import logger
 
-
-class NotificationError(Exception):
-    """notification service error"""
+from launches.errors import NotificationError
 
 
 class NotificationService(Protocol):
