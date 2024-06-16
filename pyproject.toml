@@ -45,5 +45,7 @@ mypy_path = "launches"
 
 [tool.ruff]
 line-length = 100
+
+[tool.ruff.lint]
 # Enforce pyflakes(F), pycodestyle(E, W), isort (I), bugbears (B), and pep8-naming (N) rules.
-# select = ["F", "E", "W", "I", "B", "N", "RET"]
+select = ["F", "E", "W", "I", "B", "N", "RET"]

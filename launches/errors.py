@@ -9,17 +9,17 @@ SPDX-License-Identifier: MIT OR Apache-2.0
 """
 
 
-class LaunchesException(Exception):
+class LaunchesError(Exception):
     """Base Launches Library Exception"""
 
 
-class ConfigError(LaunchesException):
+class ConfigError(LaunchesError):
     """Configuration Error"""
 
 
-class LL2RequestError(LaunchesException):
+class LL2RequestError(LaunchesError):
     """Launches LL2 API Error"""
 
 
-class NotificationError(LaunchesException):
+class NotificationError(LaunchesError):
     """notification service error"""
