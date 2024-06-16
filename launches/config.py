@@ -63,9 +63,9 @@ def load_config(config_path: str) -> LaunchesConfig:
                 model = LaunchesConfig.model_validate_json(fp.read())
             except ValidationError as ex:
                 logger.error("Invalid configuration: {}", ex)
-                raise ConfigError("malformed configuration")
+                raise ConfigError("malformed configuration") from ex
     except IOError as ex:
         logger.error("Unable to read config file: {}", ex)
-        raise ConfigError("unable to read config file")
+        raise ConfigError("unable to read config file") from ex
 
     return model

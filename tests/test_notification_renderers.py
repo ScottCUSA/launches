@@ -39,7 +39,7 @@ Launch 1:
         Name: Space Launch Complex 4E
         Location: Vandenberg SFB, CA, USA
 
-"""
+"""  # noqa: E501
 
 
 def test_jinja_renderer(valid_launches):

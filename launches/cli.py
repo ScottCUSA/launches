@@ -19,7 +19,7 @@ import schedule
 from loguru import logger
 
 from launches.config import load_config
-from launches.errors import LaunchesException
+from launches.errors import LaunchesError
 from launches.launches import (
     get_upcoming_launches,
     send_notification,
@@ -115,7 +115,7 @@ def check_for_upcoming_launches(
 
     try:
         launches = get_upcoming_launches(window_hours)
-    except LaunchesException as ex:
+    except LaunchesError as ex:
         logger.exception("Exception occured while attempting to get upcoming launches", ex)
         return
 
@@ -167,8 +167,12 @@ def cli():
 
     # load config
     config = load_config(args["config_path"])
-    window_hours = config.search_window_hours if config.search_window_hours is not None else args["window"]
-    repeat_hours = config.search_repeat_hours if config.search_repeat_hours is not None else args["repeat"]
+    window_hours = (
+        config.search_window_hours if config.search_window_hours is not None else args["window"]
+    )
+    repeat_hours = (
+        config.search_repeat_hours if config.search_repeat_hours is not None else args["repeat"]
+    )
 
     if args["service_mode"] or args["normal_notif"]:
         notification_handlers = get_notification_handlers(config.notification_handlers)

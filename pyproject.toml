@@ -1,6 +1,6 @@
 [project]
 name = "launches"
-version = "0.1.0"
+version = "0.3.0"
 description = "A tool which checks for upcoming space launches using the space launch library 2 (LL2) API and can send notifications if upcoming launches are found."
 authors = [{ name = "Scott Cummings" }]
 license = "Apache-2.0 OR MIT"
@@ -45,5 +45,7 @@ mypy_path = "launches"
 
 [tool.ruff]
 line-length = 100
+
+[tool.ruff.lint]
 # Enforce pyflakes(F), pycodestyle(E, W), isort (I), bugbears (B), and pep8-naming (N) rules.
-# select = ["F", "E", "W", "I", "B", "N", "RET"]
+select = ["F", "E", "W", "I", "B", "N", "RET"]
