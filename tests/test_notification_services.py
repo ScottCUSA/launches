@@ -3,6 +3,7 @@
 Copyright ©️ 2023 Scott Cummings
 SPDX-License-Identifier: MIT OR Apache-2.0
 """
+
 from unittest.mock import patch
 import base64
 from launches.notifications.services import (
@@ -58,11 +59,10 @@ def test_get_notification_service_unknown_service():
         "parameters": {},
     }
 
-    with patch("sys.exit") as mock_exit, patch("logging.error") as mock_logging_error:
+    with patch("sys.exit") as mock_exit:
         get_notification_service(service_config)
 
     assert mock_exit.call_count == 1
-    assert mock_logging_error.call_count == 1
 
 
 def test_get_notification_service_missing_fields():
@@ -72,8 +72,7 @@ def test_get_notification_service_missing_fields():
         "parameters": {},
     }
 
-    with patch("sys.exit") as mock_exit, patch("logging.error") as mock_logging_error:
+    with patch("sys.exit") as mock_exit:
         get_notification_service(service_config)
 
     assert mock_exit.call_count == 2
-    assert mock_logging_error.call_count == 2

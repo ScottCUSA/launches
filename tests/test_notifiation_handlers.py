@@ -3,6 +3,7 @@
 Copyright ©️ 2023 Scott Cummings
 SPDX-License-Identifier: MIT OR Apache-2.0
 """
+
 from unittest.mock import Mock, patch
 import pytest
 from test_ll2 import VALID_LAUNCHES_DICT
@@ -30,9 +31,7 @@ def test_send(handler):  # pylint: disable=redefined-outer-name
 
 @patch("launches.notifications.handlers.get_notification_renderer")
 @patch("launches.notifications.handlers.get_notification_service")
-def test_get_notification_handlers(
-    get_notification_service_mock, get_notification_renderer_mock
-):
+def test_get_notification_handlers(get_notification_service_mock, get_notification_renderer_mock):
     """get_notification_handlers should return a list of NotificationHandlers"""
     handler_configs = [{"service": "stdout", "renderer": "text", "parameters": {}}]
     get_notification_handlers(handler_configs)

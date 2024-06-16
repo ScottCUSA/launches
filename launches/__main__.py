@@ -9,8 +9,10 @@ See the readme for additional documentation on the tool/service
 Copyright ©️ 2023 Scott Cummings
 SPDX-License-Identifier: MIT OR Apache-2.0
 """
+
 import argparse
-import logging
+import sys
+from loguru import logger
 import os
 import time
 from typing import Any
@@ -109,11 +111,11 @@ def check_for_upcoming_launches(
     notification_handlers: list[NotificationHandler],
 ) -> None:
     """run a check for upcoming launches"""
-    logging.info("Checking for upcoming launches within a %s hour window", args["window"])
+    logger.info("Checking for upcoming launches within a {} hour window", args["window"])
     launches = get_upcoming_launches(args["window"])
     if launches is None:
         if args["service_mode"]:
-            logging.error("Error attempting to get launches")
+            logger.error("Error attempting to get launches")
         else:
             print("Error attempting to get launches")
         return
@@ -123,7 +125,7 @@ def check_for_upcoming_launches(
         send_notification(launches, notification_handlers)
     else:
         if args["service_mode"]:
-            logging.info("No upcoming launches found within window")
+            logger.info("No upcoming launches found within window")
         else:
             print(f"No upcoming launches found within a {args['window']} hour window.")
 
@@ -153,17 +155,18 @@ def main():
     args = parse_args()
 
     # configure logging
+    logger.remove()
     if args["debug_logging"]:
         # debugging level override
-        logging.basicConfig(level=logging.DEBUG)
+        logger.add(sys.stderr, level="DEBUG")
     elif args["service_mode"]:
         # configure info level logging by default in service mode
-        logging.basicConfig(level=logging.INFO)
+        logger.add(sys.stderr, level="INFO")
     else:
         # configure warning level logging otherwise
-        logging.basicConfig(level=logging.WARNING)
+        logger.add(sys.stderr, level="WARNING")
 
-    logging.debug("args: %s", args)
+    logger.debug("args: {}", args)
 
     # load config
     config = load_config(args["config_path"])
@@ -171,13 +174,9 @@ def main():
     # load notification services from the config if in normal mode
     # with notification enabled or in service mode
     if args["service_mode"] or args["normal_notif"]:
-        notification_handlers = get_notification_handlers(
-            config["notification_handlers"]
-        )
+        notification_handlers = get_notification_handlers(config["notification_handlers"])
     else:
-        notification_handlers = [
-            NotificationHandler(TextRenderer(), StdOutNotificationService())
-        ]
+        notification_handlers = [NotificationHandler(TextRenderer(), StdOutNotificationService())]
 
     if not args["service_mode"]:
         check_for_upcoming_launches(args, notification_handlers)

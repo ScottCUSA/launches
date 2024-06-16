@@ -3,14 +3,19 @@
 Copyright ©️ 2023 Scott Cummings
 SPDX-License-Identifier: MIT OR Apache-2.0
 """
+
 import json
-import logging
+from loguru import logger
 from datetime import datetime
 from typing import Any
 
 import requests
 
-LL2_API_URL = "https://ll.thespacedevs.com/2.2.0/"
+LL2_ENV = "prod"
+LL2_API_URL = {
+    "prod": "https://ll.thespacedevs.com/2.2.0/",
+    "dev": "https://lldev.thespacedevs.com/2.2.0/",
+}
 LL2_UPCOMING_ENDPOINT = "launch/upcoming/"
 REQUEST_TIMEOUT = 30
 LAUNCH_DT_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
@@ -23,19 +28,19 @@ class LL2RequestError(Exception):
 def ll2_get(endpoint: str, parameters: dict) -> requests.Response:
     """make a get request to the launch library at the
     provided endpoint using the provided parameters"""
-    logging.info(
-        "Making request to space launch library endpoint %s with parameters: %s",
+    logger.info(
+        "Making request to space launch library endpoint {} with parameters: {}",
         endpoint,
         parameters,
     )
     # call launch API for tomorrow's launches
     try:
         resp = requests.get(
-            LL2_API_URL + endpoint,
+            LL2_API_URL[LL2_ENV] + endpoint,
             params=parameters,
             timeout=REQUEST_TIMEOUT,
         )
-        logging.info("Space launch library response status code: %s", resp.status_code)
+        logger.info("Space launch library response status code: {}", resp.status_code)
         # raise an exception if the status code >=400
         resp.raise_for_status()
     except requests.exceptions.RequestException as ex:
@@ -65,9 +70,9 @@ def get_upcoming_launches_within_window(
 
     try:
         check_response(launches)
-        logging.info("upcoming launches: %s", launches["count"])
+        logger.info("upcoming launches: {}", launches["count"])
     except LL2RequestError as ex:
-        logging.error("Error encounted attempting to get upcoming launches: %s", ex)
+        logger.error("Error encounted attempting to get upcoming launches: {}", ex)
         return None
 
     return launches

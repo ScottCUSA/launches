@@ -3,8 +3,9 @@
 Copyright ©️ 2023 Scott Cummings
 SPDX-License-Identifier: MIT OR Apache-2.0
 """
+
 import base64
-import logging
+from loguru import logger
 import smtplib
 import ssl
 import sys
@@ -35,14 +36,19 @@ class EmailNotificationService:
         self.server: str = kwargs["smtp_server"]
         self.port: int = kwargs["smtp_port"]
         self.use_tls: bool = kwargs["use_tls"]
+        if "local_hostname" in kwargs:
+            self.local_hostname: str | None = kwargs["local_hostname"]
+        else:
+            self.local_hostname = None
         if "smtp_username" in kwargs and "smtp_password" in kwargs:
-            self.username: str = kwargs["smtp_username"]
-            self.password: str = base64.b64decode(kwargs["smtp_password"]).decode(
-                "utf-8"
-            )
+            self.username: str | None = kwargs["smtp_username"]
+            self.password: str | None = base64.b64decode(kwargs["smtp_password"]).decode("utf-8")
+        else:
+            self.username = None
+            self.password = None
         self.sender: str = kwargs["sender"]
         self.recipients: list[str] | str = kwargs["recipients"]
-        logging.info("Initialized %s", self)
+        logger.info("Initialized {}", self)
 
     def get_msg(self, subject: str, body: str) -> str:
         """build the message using MIMEText
@@ -60,21 +66,21 @@ class EmailNotificationService:
         """Attempt to connect to SMTP server and send email
         will raise a NotificationError if there were any issues"""
 
-        logging.info("Attempting to send email notification")
+        logger.info("Attempting to send email notification")
 
         # attempt to create a SSL context if we need to use TLS
         if self.use_tls:
             try:
                 context = ssl.create_default_context()
             except ssl.SSLError as ex:
-                raise NotificationError(
-                    "Unable to make secure connection to SMTP server."
-                ) from ex
+                raise NotificationError("Unable to make secure connection to SMTP server.") from ex
 
         # attempt to connect to the SMTP server and send the email
         try:
-            with smtplib.SMTP(self.server, self.port) as connection:
-                # verify connection
+            with smtplib.SMTP(
+                self.server, self.port, local_hostname=self.local_hostname
+            ) as connection:
+                # send the EHLO command
                 connection.ehlo()
                 if self.use_tls:
                     connection.starttls(context=context)
@@ -85,11 +91,11 @@ class EmailNotificationService:
                 send_errs = connection.sendmail(
                     self.sender, self.recipients, self.get_msg(subject, body)
                 )
-                logging.debug("Send Errors: %s", send_errs)
+                logger.debug("Send Errors: {}", send_errs)
         except (smtplib.SMTPException, ssl.SSLError) as ex:
             raise NotificationError(f"Unable to send email notification {ex}") from ex
 
-        logging.info("Successfully sent email notification")
+        logger.info("Successfully sent email notification")
 
     def __repr__(self) -> str:
         return (
@@ -102,11 +108,11 @@ class StdOutNotificationService:
     """A "dummy" notification service which just prints to stdout"""
 
     def __init__(self, *_args, **_kwargs) -> None:
-        logging.info("Initialized %s", self)
+        logger.info("Initialized {}", self)
 
     def send(self, subject: str, body: str) -> None:
         """print notification to stdout"""
-        logging.info("StdOut Notification:")
+        logger.info("StdOut Notification:")
         print(subject)
         print(body)
 
@@ -131,11 +137,11 @@ def get_notification_service(
     the service, or required configuration parameters are missing.
     """
     if "service" not in service_config or "parameters" not in service_config:
-        logging.error("Service config missing required fields")
+        logger.error("Service config missing required fields")
         sys.exit(1)
     try:
-        logging.info(
-            "Attempting to load notification service: %s",
+        logger.info(
+            "Attempting to load notification service: {}",
             service_config["service"],
         )
         match service_config["service"]:
@@ -144,11 +150,11 @@ def get_notification_service(
             case "stdout":
                 return StdOutNotificationService()
             case _:
-                logging.error(
-                    "Unknown notification service %s",
+                logger.error(
+                    "Unknown notification service {}",
                     service_config["service"],
                 )
                 sys.exit(1)
     except (ValueError, TypeError, KeyError) as ex:
-        logging.error("Unable to load notification service: %s", ex)
+        logger.error("Unable to load notification service: {}", ex)
         sys.exit(1)

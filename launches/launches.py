@@ -1,5 +1,5 @@
 """
-# Space Launch Notifications - Module 
+# Space Launch Notifications - Module
 
 A tool/library which checks for upcoming space launches via an API
 and can send a notifications if there are any upcoming space launch events.
@@ -12,7 +12,7 @@ SPDX-License-Identifier: MIT OR Apache-2.0
 """
 
 import json
-import logging
+from loguru import logger
 import sys
 from datetime import datetime, timedelta
 from typing import Any
@@ -55,14 +55,14 @@ def load_config(config_path: str) -> dict[str, Any]:
     """
     # attempt to load the configuration
     try:
-        logging.info("Attempting to load configuration file: `%s`", config_path)
+        logger.info("Attempting to load configuration file: `{}`", config_path)
         with open(config_path, encoding="utf-8") as fp:
             config = json.load(fp)
     except IOError as ex:
-        logging.error("Unable to read config file: %s", ex)
+        logger.error("Unable to read config file: {}", ex)
         sys.exit(1)
     except json.JSONDecodeError as ex:
-        logging.error("Unable to decode the config file as JSON: %s", ex)
+        logger.error("Unable to decode the config file as JSON: {}", ex)
         sys.exit(1)
 
     if (
@@ -96,8 +96,8 @@ def send_notification(
 ):
     """Build and send a notification using the provided launches,
     subject_render, body_renderer, and notification service"""
-    logging.info(
-        "%s upcoming launches, attempting to send notifications",
+    logger.info(
+        "{} upcoming launches, attempting to send notifications",
         launches["count"],
     )
 
@@ -106,4 +106,4 @@ def send_notification(
         for notification_handler in notification_handlers:
             notification_handler.send(launches)
     except NotificationError as ex:
-        logging.error("Error encounted attempting to send notification: %s", ex)
+        logger.error("Error encounted attempting to send notification: {}", ex)

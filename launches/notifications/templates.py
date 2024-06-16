@@ -3,8 +3,9 @@
 Copyright ©️ 2023 Scott Cummings
 SPDX-License-Identifier: MIT OR Apache-2.0
 """
+
 from datetime import datetime
-import logging
+from loguru import logger
 from typing import Any, Protocol
 
 import pytz
@@ -37,7 +38,7 @@ class TextRenderer:
 
     def __init__(self):
         self.renderer = JINJA_ENV.get_template(TXT_TEMPLATE)
-        logging.info("Initialized %s with template: %s", self, TXT_TEMPLATE)
+        logger.info("Initialized {} with template: {}", self, TXT_TEMPLATE)
 
     def render_subject(self, launches: dict[str, Any]) -> str:
         """render text subject"""
@@ -53,8 +54,8 @@ class TextRenderer:
 
 def get_notification_renderer(renderer: str) -> NotificationRenderer:
     """Get a NotificationRender based on the renderer string."""
-    logging.debug(
-        "loading notification render: %s",
+    logger.debug(
+        "loading notification render: {}",
         renderer,
     )
     match renderer:
@@ -62,7 +63,7 @@ def get_notification_renderer(renderer: str) -> NotificationRenderer:
             return TextRenderer()
         case _:
             # default to TextRender
-            logging.warning("Unknown renderer: '%s'", renderer)
+            logger.warning("Unknown renderer: '{}'", renderer)
             return TextRenderer()
 
 
