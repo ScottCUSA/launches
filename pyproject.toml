@@ -1,42 +1,42 @@
-[tool.poetry]
+[project]
 name = "launches"
 version = "0.1.0"
 description = "A tool which checks for upcoming space launches using the space launch library 2 (LL2) API and can send notifications if upcoming launches are found."
-authors = ["Scott Cummings"]
+authors = [{ name = "Scott Cummings" }]
 license = "Apache-2.0 OR MIT"
+dependencies = [
+    "jinja2>=3.1.4",
+    "requests>=2.32.3",
+    "pytz>=2024.1",
+    "schedule>=1.2.2",
+]
 readme = "README.md"
+requires-python = ">= 3.10"
 
-[tool.poetry.dependencies]
-python = "^3.11"
-Jinja2 = "^3.1.2"
-requests = "^2.31.0"
-pytz = "^2023.3.post1"
-schedule = "^1.2.1"
-
-[tool.poetry.group.dev.dependencies]
-pylint = "^3.0.2"
-mypy = "^1.7.0"
-types-pytz = "^2023.3.1.1"
-types-requests = "^2.31.0.10"
-freezegun = "^1.2.2"
-pytest = "^7.4.3"
-pytest-cov = "^4.1.0"
-black = "^23.11.0"
-
-[tool.poetry.group.github-actions.dependencies]
-mypy = "^1.7.0"
-pytest = "^7.4.3"
-pytest-cov = "^4.1.0"
-freezegun = "^1.2.2"
-pylint = "^3.0.2"
-
-[tool.poetry.scripts]
+[project.scripts]
 launches = "launches.__main__:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.rye]
+managed = true
+dev-dependencies = [
+    "mypy>=1.10.0",
+    "freezegun>=1.5.1",
+    "pytest-cov>=5.0.0",
+    "types-pytz>=2024.1.0.20240417",
+    "types-requests>=2.32.0.20240602",
+    "ruff>=0.4.9",
+]
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["launches"]
 
 [tool.mypy]
 files = "launches, tests"
-mypy_path = "src"
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+mypy_path = "launches"

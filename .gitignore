@@ -164,3 +164,5 @@ cython_debug/
 
 # VSCode debugging configuration
 .vscode/launch.json
+
+.python-version
