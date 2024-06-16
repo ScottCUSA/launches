@@ -75,17 +75,18 @@ Launch 1:
 
 ```
 
-## Notification Handlers Config:
+## Launches Config JSON:
 
-This applications loads it's notification handler configuration from a JSON file on disk. From `./config.json` by default. This was done to ease configuration of the tool and to avoid storing sensitive information in the code.
+This applications loads it's configuration from a JSON file on disk. From `./config.json` by default. This was done to ease configuration of the tool and to avoid storing sensitive information in the code.
 
 Notification Handlers are made up of a notifiation render, a notification service and it's parameters. There's more information on each in the following sections.
 
-__Note: An exception will be thrown at startup if there are issues loading or validating the configuration file and notifications are enabled.__
+__Note: An exception will be thrown at startup if there are issues loading or validating the configuration file.__
 
-Multiple handlers can be configured using the following pseudo-json-schema:
 ```json
 {
+    "search_window_hours":24,
+    "search_repeat_hours":24,
     "notification_handlers": [
         {
             "service": "",

@@ -167,8 +167,8 @@ def cli():
 
     # load config
     config = load_config(args["config_path"])
-    search_window = config.search_window if config.search_window is not None else args["window"]
-    search_repeat = config.search_repeat if config.search_repeat is not None else args["repeat"]
+    window_hours = config.search_window_hours if config.search_window_hours is not None else args["window"]
+    repeat_hours = config.search_repeat_hours if config.search_repeat_hours is not None else args["repeat"]
 
     if args["service_mode"] or args["normal_notif"]:
         notification_handlers = get_notification_handlers(config.notification_handlers)
@@ -176,6 +176,6 @@ def cli():
         notification_handlers = [NotificationHandler(JinjaRenderer(), StdOutNotificationService())]
 
     if args["service_mode"]:
-        check_for_upcoming_launches_scheduled(search_window, search_repeat, notification_handlers)
+        check_for_upcoming_launches_scheduled(window_hours, repeat_hours, notification_handlers)
     else:
-        check_for_upcoming_launches(search_window, notification_handlers)
+        check_for_upcoming_launches(window_hours, notification_handlers)
