@@ -5,7 +5,9 @@ SPDX-License-Identifier: MIT OR Apache-2.0
 """
 
 from unittest.mock import Mock, patch
+
 import pytest
+
 from launches.notifications.handlers import (
     NotificationHandler,
     get_notification_handlers,

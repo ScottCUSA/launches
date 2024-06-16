@@ -5,11 +5,10 @@ SPDX-License-Identifier: MIT OR Apache-2.0
 """
 
 import base64
-from email.mime.base import MIMEBase
-from email.mime.multipart import MIMEMultipart
 import smtplib
 import ssl
 import sys
+from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from typing import Any, Protocol
 
@@ -57,7 +56,7 @@ class EmailNotificationService:
         """build the message using MIMEText
         return the message as a str"""
         if html_body:
-            msg: MIMEBase = MIMEMultipart("alternative")
+            msg: MIMEMultipart | MIMEText = MIMEMultipart("alternative")
         else:
             msg = MIMEText(body)
         msg["Subject"] = subject

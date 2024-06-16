@@ -4,8 +4,9 @@ Copyright ©️ 2023 Scott Cummings
 SPDX-License-Identifier: MIT OR Apache-2.0
 """
 
-from unittest.mock import patch
 import base64
+from unittest.mock import patch
+
 from launches.notifications.services import (
     EmailNotificationService,
     StdOutNotificationService,

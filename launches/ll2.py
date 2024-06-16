@@ -5,11 +5,11 @@ SPDX-License-Identifier: MIT OR Apache-2.0
 """
 
 import json
-from loguru import logger
 from datetime import datetime
 from typing import Any
 
 import requests
+from loguru import logger
 
 LL2_ENV = "prod"
 LL2_API_URL = {

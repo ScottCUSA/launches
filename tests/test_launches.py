@@ -4,22 +4,21 @@ Copyright ©️ 2023 Scott Cummings
 SPDX-License-Identifier: MIT OR Apache-2.0
 """
 
-from datetime import datetime
 import io
+from datetime import datetime
 from unittest.mock import MagicMock
-import pytest
 
+import pytest
 import pytz
 from freezegun import freeze_time
 
 from launches import launches
 from launches.launches import (
-    load_config,
     ConfigError,
-    get_window_datetime,
     get_upcoming_launches,
+    get_window_datetime,
+    load_config,
 )
-
 
 VALID_TEST_CONFIG_JSON = """{
     "notification_handlers": [
