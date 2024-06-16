@@ -9,6 +9,8 @@
 #   generate-hashes: false
 
 -e file:.
+annotated-types==0.7.0
+    # via pydantic
 certifi==2024.6.2
     # via requests
 charset-normalizer==3.3.2
@@ -33,6 +35,10 @@ packaging==24.1
     # via pytest
 pluggy==1.5.0
     # via pytest
+pydantic==2.7.4
+    # via launches
+pydantic-core==2.18.4
+    # via pydantic
 pytest==8.2.2
     # via pytest-cov
 pytest-cov==5.0.0
@@ -51,6 +57,8 @@ types-pytz==2024.1.0.20240417
 types-requests==2.32.0.20240602
 typing-extensions==4.12.2
     # via mypy
+    # via pydantic
+    # via pydantic-core
 urllib3==2.2.1
     # via requests
     # via types-requests

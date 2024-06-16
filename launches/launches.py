@@ -11,65 +11,16 @@ Copyright ©️ 2024 Scott Cummings
 SPDX-License-Identifier: MIT OR Apache-2.0
 """
 
-import json
 from datetime import datetime, timedelta
 from typing import Any
 
 import pytz
 from loguru import logger
 
-from launches.errors import ConfigError, NotificationError
+from launches.errors import NotificationError
 
 from .ll2 import get_upcoming_launches_within_window
 from .notifications.handlers import NotificationHandler
-
-
-def load_config(config_path: str) -> dict[str, Any]:
-    """load project config from JSON
-    Example JSON:
-    {
-        "notification_handlers": [
-            {
-                "service": "stdout",
-                "render": "plaintext",
-                "parameters": {}
-            },
-            {
-                "service":"email",
-                "render": "plaintext",
-                "parameters":{
-                    "smtp_server":"smtp-server",
-                    "smtp_port": 587,
-                    "smtp_username":"",
-                    "smtp_password":"",
-                    "sender":"",
-                    "recipients": ["",""]
-                }
-            }
-        ]
-    }
-    """
-    # attempt to load the configuration
-    try:
-        logger.info("Attempting to load configuration file: `{}`", config_path)
-        with open(config_path, encoding="utf-8") as fp:
-            config = json.load(fp)
-    except IOError as ex:
-        logger.error("Unable to read config file: {}", ex)
-        raise ConfigError("unable to read config file")
-    except json.JSONDecodeError as ex:
-        logger.error("Unable to decode the config file as JSON: {}", ex)
-        raise ConfigError("unable to decode config file")
-
-    if (
-        config is None
-        or not isinstance(config, dict)
-        or "notification_handlers" not in config
-        or not isinstance(config["notification_handlers"], list)
-    ):
-        raise ConfigError("malformed configuration")
-
-    return config
 
 
 def get_window_datetime(window_hours: int) -> datetime:
