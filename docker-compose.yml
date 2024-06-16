@@ -1,5 +1,7 @@
-version: '3'
 services:
   launches:
+    restart: unless-stopped
     build:
       context: .
+    volumes:
+      - ${PWD}/config.json:/app/config.json
