@@ -9,7 +9,7 @@ from loguru import logger
 from typing import Any, Protocol
 
 import pytz
-from jinja2 import Environment, PackageLoader, select_autoescape
+from jinja2 import Environment, PackageLoader, Template, select_autoescape
 
 from launches.ll2 import LAUNCH_DT_FORMAT
 
@@ -44,7 +44,7 @@ class JinjaRenderer:
     def __init__(self, text_template=TXT_TEMPLATE, formatted_template: str | None = None):
         self.text_renderer = JINJA_ENV.get_template(text_template)
         if formatted_template is not None:
-            self.formatted_renderer = JINJA_ENV.get_template(formatted_template)
+            self.formatted_renderer: Template | None = JINJA_ENV.get_template(formatted_template)
         else:
             self.formatted_renderer = None
         logger.info(
