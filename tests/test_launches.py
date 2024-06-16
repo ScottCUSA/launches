@@ -5,8 +5,8 @@ SPDX-License-Identifier: MIT OR Apache-2.0
 """
 
 import io
-from datetime import datetime
 import json
+from datetime import datetime
 from unittest.mock import MagicMock
 
 import pytest
