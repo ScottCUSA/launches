@@ -100,6 +100,7 @@ def send_notification(
         "{} upcoming launches, attempting to send notifications",
         launches["count"],
     )
+    logger.debug("configured notification handlers {}", notification_handlers)
 
     # attempt to send the notification
     try:

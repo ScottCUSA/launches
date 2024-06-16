@@ -29,7 +29,7 @@ from launches.notifications.handlers import (
     get_notification_handlers,
 )
 from launches.notifications.services import StdOutNotificationService
-from launches.notifications.templates import TextRenderer
+from launches.notifications.renderers import JinjaRenderer
 
 DEFAULT_CONFIG_PATH = "config.json"
 DEFAULT_REPEAT_HOURS = 24  # number of hours between checks for upcoming launches
@@ -176,7 +176,7 @@ def main():
     if args["service_mode"] or args["normal_notif"]:
         notification_handlers = get_notification_handlers(config["notification_handlers"])
     else:
-        notification_handlers = [NotificationHandler(TextRenderer(), StdOutNotificationService())]
+        notification_handlers = [NotificationHandler(JinjaRenderer(), StdOutNotificationService())]
 
     if not args["service_mode"]:
         check_for_upcoming_launches(args, notification_handlers)

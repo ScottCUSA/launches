@@ -12,7 +12,6 @@ import pytest
 import pytz
 from freezegun import freeze_time
 
-from test_ll2 import VALID_LAUNCHES_DICT
 from launches import launches
 from launches.launches import (
     load_config,
@@ -73,12 +72,12 @@ def test_get_window_datetime_negative():
     assert str(ex.value) == "window_hours must be a positive int"
 
 
-def test_get_upcoming_launches(monkeypatch):
+def test_get_upcoming_launches(monkeypatch, valid_launches):
     """get_upcoming_launches should return a dict of upcoming launches"""
     mock_get_window_datetime = MagicMock(
         return_value=datetime(2023, 11, 19, 7, 55, 0, tzinfo=pytz.utc)
     )
-    mock_get_upcoming_launches_within_window = MagicMock(return_value=VALID_LAUNCHES_DICT)
+    mock_get_upcoming_launches_within_window = MagicMock(return_value=valid_launches)
     monkeypatch.setattr(
         launches,
         "get_upcoming_launches_within_window",
@@ -90,7 +89,7 @@ def test_get_upcoming_launches(monkeypatch):
         mock_get_window_datetime,
     )
     ul = get_upcoming_launches(12)
-    assert ul == VALID_LAUNCHES_DICT
+    assert ul == valid_launches
     mock_get_window_datetime.assert_called_once()
     mock_get_window_datetime.assert_called_with(12)
     mock_get_upcoming_launches_within_window.assert_called_once()

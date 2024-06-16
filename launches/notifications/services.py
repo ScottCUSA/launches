@@ -5,12 +5,15 @@ SPDX-License-Identifier: MIT OR Apache-2.0
 """
 
 import base64
-from loguru import logger
+from email.mime.base import MIMEBase
+from email.mime.multipart import MIMEMultipart
 import smtplib
 import ssl
 import sys
 from email.mime.text import MIMEText
 from typing import Any, Protocol
+
+from loguru import logger
 
 
 class NotificationError(Exception):
@@ -20,7 +23,7 @@ class NotificationError(Exception):
 class NotificationService(Protocol):
     """The protocol a notification service needs to follow"""
 
-    def send(self, subject: str, body: str) -> None:
+    def send(self, subject: str, msg: str, formatted_msg: str | None) -> None:
         """send notification"""
         raise NotImplementedError()
 
@@ -50,21 +53,30 @@ class EmailNotificationService:
         self.recipients: list[str] | str = kwargs["recipients"]
         logger.info("Initialized {}", self)
 
-    def get_msg(self, subject: str, body: str) -> str:
+    def get_msg(self, subject: str, body: str, html_body: str | None) -> str:
         """build the message using MIMEText
         return the message as a str"""
-        msg = MIMEText(body)
+        if html_body:
+            msg: MIMEBase = MIMEMultipart("alternative")
+        else:
+            msg = MIMEText(body)
         msg["Subject"] = subject
         msg["From"] = self.sender
         if isinstance(self.recipients, list):
             msg["To"] = ", ".join(self.recipients)
         else:
             msg["To"] = self.recipients
+        if html_body:
+            text = MIMEText(body, "text")
+            html = MIMEText(html_body, "html")
+            msg.attach(text)
+            msg.attach(html)
         return msg.as_string()
 
-    def send(self, subject: str, body: str) -> None:
+    def send(self, subject: str, msg: str, formatted_msg: str | None) -> None:
         """Attempt to connect to SMTP server and send email
-        will raise a NotificationError if there were any issues"""
+        will raise a NotificationError if there were any issues
+        msg must be a valid email message"""
 
         logger.info("Attempting to send email notification")
 
@@ -89,7 +101,7 @@ class EmailNotificationService:
                     connection.login(self.username, self.password)
                 # actually attempt to send the email
                 send_errs = connection.sendmail(
-                    self.sender, self.recipients, self.get_msg(subject, body)
+                    self.sender, self.recipients, self.get_msg(subject, msg, formatted_msg)
                 )
                 logger.debug("Send Errors: {}", send_errs)
         except (smtplib.SMTPException, ssl.SSLError) as ex:
@@ -110,11 +122,11 @@ class StdOutNotificationService:
     def __init__(self, *_args, **_kwargs) -> None:
         logger.info("Initialized {}", self)
 
-    def send(self, subject: str, body: str) -> None:
+    def send(self, subject: str, msg: str, formatted_msg: str | None) -> None:
         """print notification to stdout"""
         logger.info("StdOut Notification:")
         print(subject)
-        print(body)
+        print(msg)
 
     def __repr__(self) -> str:
         return "StdOutNotificationService()"
