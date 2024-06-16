@@ -23,8 +23,8 @@ class NotificationHandlerConfig(BaseModel):
 
 
 class LaunchesConfig(BaseModel):
-    search_window: int | None = None
-    search_repeat: int | None = None
+    search_window_hours: int | None = None
+    search_repeat_hours: int | None = None
     notification_handlers: list[NotificationHandlerConfig]
 
 
@@ -32,8 +32,8 @@ def load_config(config_path: str) -> LaunchesConfig:
     """load project config from JSON
     Example JSON:
     {
-        "search_window": 24,
-        "search_repeat": 24,
+        "search_window_hours": 24,
+        "search_repeat_hours": 24,
         "notification_handlers": [
             {
                 "service": "stdout",

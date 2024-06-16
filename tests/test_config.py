@@ -7,8 +7,8 @@ from launches.config import LaunchesConfig, NotificationHandlerConfig, load_conf
 from launches.errors import ConfigError
 
 VALID_TEST_CONFIG_JSON = """{
-    "search_window": 24,
-    "search_repeat": 8,
+    "search_window_hours": 24,
+    "search_repeat_hours": 8,
     "notification_handlers": [
         {
             "service": "stdout",
@@ -44,8 +44,8 @@ def test_load_config(monkeypatch):
     monkeypatch.setattr("builtins.open", mock_open)
     config = load_config("config.json")
     assert config == LaunchesConfig(
-        search_window=24,
-        search_repeat=8,
+        search_window_hours=24,
+        search_repeat_hours=8,
         notification_handlers=[
             NotificationHandlerConfig(service="stdout", renderer="text", parameters={})
         ],
@@ -59,8 +59,8 @@ def test_load_config_no_window_or_repeat(monkeypatch):
     monkeypatch.setattr("builtins.open", mock_open)
     config = load_config("config.json")
     assert config == LaunchesConfig(
-        search_window=None,
-        search_repeat=None,
+        search_window_hours=None,
+        search_repeat_hours=None,
         notification_handlers=[
             NotificationHandlerConfig(service="stdout", renderer="text", parameters={})
         ],
