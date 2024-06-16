@@ -10,12 +10,13 @@ dependencies = [
     "pytz>=2024.1",
     "schedule>=1.2.2",
     "loguru>=0.7.2",
+    "pydantic>=2.7.4",
 ]
 readme = "README.md"
 requires-python = ">= 3.10"
 
 [project.scripts]
-launches = "launches.__main__:main"
+launches = "launches.cli:cli"
 
 [build-system]
 requires = ["hatchling"]

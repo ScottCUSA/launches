@@ -106,9 +106,9 @@ def test_get_upcoming_launches_within_window_invalid_response(
     }
 
     # test
-    launches = get_upcoming_launches_within_window(window_start)
+    with pytest.raises(LL2RequestError):
+        get_upcoming_launches_within_window(window_start)
 
     # assert
-    assert launches is None
     mock_ll2_get.assert_called_with(LL2_UPCOMING_ENDPOINT, parameters)
     mock_check_response.assert_called_once()

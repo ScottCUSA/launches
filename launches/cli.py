@@ -14,14 +14,14 @@ import argparse
 import os
 import sys
 import time
-from typing import Any
 
 import schedule
 from loguru import logger
 
+from launches.config import load_config
+from launches.errors import LaunchesException
 from launches.launches import (
     get_upcoming_launches,
-    load_config,
     send_notification,
 )
 from launches.notifications.handlers import (
@@ -107,49 +107,46 @@ def parse_args() -> dict:
 
 
 def check_for_upcoming_launches(
-    args: dict[str, Any],
+    window_hours: int,
     notification_handlers: list[NotificationHandler],
 ) -> None:
     """run a check for upcoming launches"""
-    logger.info("Checking for upcoming launches within a {} hour window", args["window"])
-    launches = get_upcoming_launches(args["window"])
-    if launches is None:
-        if args["service_mode"]:
-            logger.error("Error attempting to get launches")
-        else:
-            print("Error attempting to get launches")
+    logger.info("Checking for upcoming launches within a {} hour window", window_hours)
+
+    try:
+        launches = get_upcoming_launches(window_hours)
+    except LaunchesException as ex:
+        logger.exception("Exception occured while attempting to get upcoming launches", ex)
         return
 
     if launches["count"] > 0:
         # render subject and body for notification
         send_notification(launches, notification_handlers)
     else:
-        if args["service_mode"]:
-            logger.info("No upcoming launches found within window")
-        else:
-            print(f"No upcoming launches found within a {args['window']} hour window.")
+        logger.info(f"No upcoming launches found within a {window_hours} hour window.")
 
 
 def check_for_upcoming_launches_scheduled(
-    args: dict[str, Any],
+    window_hours: int,
+    repeat_hours: int,
     notification_handlers: list[NotificationHandler],
 ) -> None:
     """run a check for upcoming launches in service mode"""
 
-    schedule.every(args["repeat"]).hours.do(
-        check_for_upcoming_launches, args, notification_handlers
+    schedule.every(repeat_hours).hours.do(
+        check_for_upcoming_launches, window_hours, notification_handlers
     )
 
     # run a check immediately
-    check_for_upcoming_launches(args, notification_handlers)
+    check_for_upcoming_launches(window_hours, notification_handlers)
 
     while True:
         schedule.run_pending()
         time.sleep(1)
 
 
-def main():
-    """entrypoint"""
+def cli():
+    """command line interface entrypoint"""
 
     # handle tool argument parsing
     args = parse_args()
@@ -170,19 +167,15 @@ def main():
 
     # load config
     config = load_config(args["config_path"])
+    search_window = config.search_window if config.search_window is not None else args["window"]
+    search_repeat = config.search_repeat if config.search_repeat is not None else args["repeat"]
 
-    # load notification services from the config if in normal mode
-    # with notification enabled or in service mode
     if args["service_mode"] or args["normal_notif"]:
-        notification_handlers = get_notification_handlers(config["notification_handlers"])
+        notification_handlers = get_notification_handlers(config.notification_handlers)
     else:
         notification_handlers = [NotificationHandler(JinjaRenderer(), StdOutNotificationService())]
 
-    if not args["service_mode"]:
-        check_for_upcoming_launches(args, notification_handlers)
+    if args["service_mode"]:
+        check_for_upcoming_launches_scheduled(search_window, search_repeat, notification_handlers)
     else:
-        check_for_upcoming_launches_scheduled(args, notification_handlers)
-
-
-if __name__ == "__main__":
-    main()
+        check_for_upcoming_launches(search_window, notification_handlers)

@@ -12,6 +12,7 @@ from typing import Any
 
 from loguru import logger
 
+from launches.config import NotificationHandlerConfig
 from launches.errors import ConfigError
 from launches.notifications.renderers import (
     NotificationRenderer,
@@ -40,35 +41,18 @@ class NotificationHandler:
 
 
 def get_notification_handlers(
-    handler_configs: list[dict[str, Any]],
+    handler_configs: list[NotificationHandlerConfig],
 ) -> list[NotificationHandler]:
     """This function returns a list notification handlers built from
     the project configuration
-
-    Expected Format:
-    service_configs = [
-        {
-            "service": "stdout",
-            "renderer":"text",   // optional
-            "parameters": {}
-        }
-    ]
-
     """
     logger.debug("loading notification handlers")
     notification_handlers: list[NotificationHandler] = []
     for handler_config in handler_configs:
-        if "service" not in handler_config or "parameters" not in handler_config:
-            logger.error("Handler config missing required fields")
-            raise ConfigError()
-        try:
-            renderer_name = handler_config["renderer"] if "renderer" in handler_config else ""
-            renderer = get_notification_renderer(renderer_name)
-            service = get_notification_service(handler_config)
-            notification_handlers.append(NotificationHandler(renderer, service))
-        except (ValueError, KeyError) as ex:
-            logger.error("Unable to load notification handlers: {}", ex)
-            raise ConfigError()
+        renderer_name = handler_config.renderer
+        renderer = get_notification_renderer(renderer_name)
+        service = get_notification_service(handler_config)
+        notification_handlers.append(NotificationHandler(renderer, service))
 
     if len(notification_handlers) == 0:
         logger.error("Unable to load any notification handlers")

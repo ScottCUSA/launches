@@ -10,10 +10,11 @@ import ssl
 import sys
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from typing import Any, Protocol
+from typing import Protocol
 
 from loguru import logger
 
+from launches.config import NotificationHandlerConfig
 from launches.errors import NotificationError
 
 
@@ -121,7 +122,7 @@ class StdOutNotificationService:
 
     def send(self, subject: str, msg: str, formatted_msg: str | None) -> None:
         """print notification to stdout"""
-        logger.info("StdOut Notification:")
+        logger.info("Sending StdOut Notification")
         print(subject)
         print(msg)
 
@@ -130,7 +131,7 @@ class StdOutNotificationService:
 
 
 def get_notification_service(
-    service_config: dict[str, Any],
+    service_config: NotificationHandlerConfig,
 ) -> NotificationService:
     """This function returns a notification service built from
     the service configuration
@@ -145,23 +146,20 @@ def get_notification_service(
     This function will exit the tool if an error is encountered loading
     the service, or required configuration parameters are missing.
     """
-    if "service" not in service_config or "parameters" not in service_config:
-        logger.error("Service config missing required fields")
-        sys.exit(1)
     try:
         logger.info(
             "Attempting to load notification service: {}",
-            service_config["service"],
+            service_config.service,
         )
-        match service_config["service"]:
+        match service_config.service:
             case "email":
-                return EmailNotificationService(**service_config["parameters"])
+                return EmailNotificationService(**service_config.parameters)
             case "stdout":
                 return StdOutNotificationService()
             case _:
                 logger.error(
                     "Unknown notification service {}",
-                    service_config["service"],
+                    service_config.service,
                 )
                 sys.exit(1)
     except (ValueError, TypeError, KeyError) as ex:

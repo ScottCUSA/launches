@@ -8,6 +8,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 
+from launches.config import NotificationHandlerConfig
 from launches.notifications.handlers import (
     NotificationHandler,
     get_notification_handlers,
@@ -35,7 +36,7 @@ def test_send(handler, valid_launches):  # pylint: disable=redefined-outer-name
 @patch("launches.notifications.handlers.get_notification_service")
 def test_get_notification_handlers(get_notification_service_mock, get_notification_renderer_mock):
     """get_notification_handlers should return a list of NotificationHandlers"""
-    handler_configs = [{"service": "stdout", "renderer": "text", "parameters": {}}]
+    handler_configs = [NotificationHandlerConfig(service="stdout", renderer="text", parameters={})]
     get_notification_handlers(handler_configs)
     get_notification_renderer_mock.assert_called_once()
     get_notification_service_mock.assert_called_once()

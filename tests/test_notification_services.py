@@ -7,6 +7,7 @@ SPDX-License-Identifier: MIT OR Apache-2.0
 import base64
 from unittest.mock import patch
 
+from launches.config import NotificationHandlerConfig
 from launches.notifications.services import (
     EmailNotificationService,
     StdOutNotificationService,
@@ -16,11 +17,7 @@ from launches.notifications.services import (
 
 def test_get_notification_service_stdout():
     """get_notification_service should return a StdOutNotificationService if service is stdout"""
-    service_config = {
-        "service": "stdout",
-        "renderer": "text",
-        "parameters": {},
-    }
+    service_config = NotificationHandlerConfig(service="stdout", renderer="text", parameters={})
 
     with patch("sys.exit") as mock_exit:
         notification_service = get_notification_service(service_config)
@@ -31,10 +28,10 @@ def test_get_notification_service_stdout():
 
 def test_get_notification_service_email():
     """get_notification_service should return an EmailNotificationService if service is email"""
-    service_config = {
-        "service": "email",
-        "renderer": "text",
-        "parameters": {
+    service_config = NotificationHandlerConfig(
+        service="email",
+        renderer="text",
+        parameters={
             "smtp_server": "smtp.example.com",
             "smtp_port": 587,
             "use_tls": True,
@@ -43,7 +40,7 @@ def test_get_notification_service_email():
             "sender": "user@example.com",
             "recipients": "user@example.com",
         },
-    }
+    )
 
     with patch("sys.exit") as mock_exit:
         notification_service = get_notification_service(service_config)
@@ -54,26 +51,13 @@ def test_get_notification_service_email():
 
 def test_get_notification_service_unknown_service():
     """get_notification_service should exit if service is unknown"""
-    service_config = {
-        "service": "unknown",
-        "renderer": "text",
-        "parameters": {},
-    }
+    service_config = NotificationHandlerConfig(
+        service="unknown",
+        renderer="text",
+        parameters={},
+    )
 
     with patch("sys.exit") as mock_exit:
         get_notification_service(service_config)
 
     assert mock_exit.call_count == 1
-
-
-def test_get_notification_service_missing_fields():
-    """get_notification_service should exit if required fields are missing"""
-    service_config = {
-        "renderer": "text",
-        "parameters": {},
-    }
-
-    with patch("sys.exit") as mock_exit:
-        get_notification_service(service_config)
-
-    assert mock_exit.call_count == 2

@@ -49,7 +49,7 @@ def ll2_get(endpoint: str, parameters: dict) -> requests.Response:
 
 def get_upcoming_launches_within_window(
     window_start_lt: datetime,
-) -> dict[str, Any] | None:
+) -> dict[str, Any]:
     """Make a request to the space launch libary for upcoming launches where the
     window is less than the provided datetime raises a RequestError
     if there are issues with the request or response"""
@@ -63,15 +63,12 @@ def get_upcoming_launches_within_window(
     # attempt to decode response as JSON
     try:
         launches = resp.json()
+        logger.debug(f"ll2 response: {resp.text}")
     except json.JSONDecodeError as ex:
         raise LL2RequestError(f"Unable to decode response JSON {ex}") from ex
 
-    try:
-        check_response(launches)
-        logger.info("upcoming launches: {}", launches["count"])
-    except LL2RequestError as ex:
-        logger.error("Error encounted attempting to get upcoming launches: {}", ex)
-        return None
+    check_response(launches)
+    logger.info("upcoming launches: {}", launches["count"])
 
     return launches
 
@@ -85,4 +82,4 @@ def check_response(launches: Any):
         or "count" not in launches
         or "results" not in launches
     ):
-        raise LL2RequestError("unexpected response")
+        raise LL2RequestError("unexpected ll2 response")
