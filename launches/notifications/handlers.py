@@ -8,7 +8,7 @@ SPDX-License-Identifier: MIT OR Apache-2.0
 """
 
 from dataclasses import dataclass
-import logging
+from loguru import logger
 import sys
 from typing import Any
 from launches.notifications.templates import (
@@ -52,25 +52,23 @@ def get_notification_handlers(
     ]
 
     """
-    logging.debug("loading notification handlers")
+    logger.debug("loading notification handlers")
     notification_handlers: list[NotificationHandler] = []
     for handler_config in handler_configs:
         if "service" not in handler_config or "parameters" not in handler_config:
-            logging.error("Handler config missing required fields")
+            logger.error("Handler config missing required fields")
             sys.exit(1)
         try:
-            renderer_name = (
-                handler_config["renderer"] if "renderer" in handler_config else ""
-            )
+            renderer_name = handler_config["renderer"] if "renderer" in handler_config else ""
             renderer = get_notification_renderer(renderer_name)
             service = get_notification_service(handler_config)
             notification_handlers.append(NotificationHandler(renderer, service))
         except (ValueError, KeyError) as ex:
-            logging.error("Unable to load notification handlers: %s", ex)
+            logger.error("Unable to load notification handlers: {}", ex)
             sys.exit(1)
 
     if len(notification_handlers) == 0:
-        logging.error("Unable to load any notification handlers")
+        logger.error("Unable to load any notification handlers")
         sys.exit(1)
 
     return notification_handlers

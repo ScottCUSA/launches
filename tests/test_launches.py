@@ -3,6 +3,7 @@
 Copyright ©️ 2023 Scott Cummings
 SPDX-License-Identifier: MIT OR Apache-2.0
 """
+
 from datetime import datetime
 import io
 from unittest.mock import MagicMock
@@ -35,9 +36,7 @@ INVALID_TEST_CONFIG_JSON = """{
     "handlers": []
 }"""
 
-TEST_CONFIG = {
-    "notification_handlers": [{"service": "stdout", "render": "text", "parameters": {}}]
-}
+TEST_CONFIG = {"notification_handlers": [{"service": "stdout", "render": "text", "parameters": {}}]}
 
 
 def test_load_config(monkeypatch):
@@ -79,9 +78,7 @@ def test_get_upcoming_launches(monkeypatch):
     mock_get_window_datetime = MagicMock(
         return_value=datetime(2023, 11, 19, 7, 55, 0, tzinfo=pytz.utc)
     )
-    mock_get_upcoming_launches_within_window = MagicMock(
-        return_value=VALID_LAUNCHES_DICT
-    )
+    mock_get_upcoming_launches_within_window = MagicMock(return_value=VALID_LAUNCHES_DICT)
     monkeypatch.setattr(
         launches,
         "get_upcoming_launches_within_window",
