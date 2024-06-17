@@ -78,30 +78,28 @@ class EmailNotificationService:
 
         logger.info("Attempting to send email notification")
 
-        # attempt to create a SSL context if we need to use TLS
         if self.use_tls:
             try:
                 context = ssl.create_default_context()
             except ssl.SSLError as ex:
                 raise NotificationError("Unable to make secure connection to SMTP server.") from ex
 
-        # attempt to connect to the SMTP server and send the email
         try:
             with smtplib.SMTP(
                 self.server, self.port, local_hostname=self.local_hostname
             ) as connection:
-                # send the EHLO command
                 connection.ehlo()
                 if self.use_tls:
                     connection.starttls(context=context)
-                # if we've been passed credentials attempt to login
+                    # required for some servers
+                    connection.ehlo()
                 if self.username and self.password:
                     connection.login(self.username, self.password)
-                # actually attempt to send the email
                 send_errs = connection.sendmail(
                     self.sender, self.recipients, self.get_msg(subject, msg, formatted_msg)
                 )
-                logger.debug("Send Errors: {}", send_errs)
+                if send_errs is not None and len(send_errs):
+                    logger.error("SMTP Send Errors: {}", send_errs)
         except (smtplib.SMTPException, ssl.SSLError) as ex:
             raise NotificationError(f"Unable to send email notification {ex}") from ex
 

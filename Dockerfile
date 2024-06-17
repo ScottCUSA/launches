@@ -11,4 +11,4 @@ COPY . .
 RUN pip install -r requirements.lock
 
 # Set the command to run your application
-CMD ["launches", "--service-mode"]
+CMD ["launches", "--service"]
