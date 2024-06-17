@@ -33,7 +33,7 @@ from launches.notifications.services import StdOutNotificationService
 
 DEFAULT_CONFIG_PATH = "config.json"
 DEFAULT_REPEAT_HOURS = 24  # number of hours between checks for upcoming launches
-DEFAULT_WINDOW_HOURS = 24  # number of hours in future to check for upcoming launches
+DEFAULT_WINDOW_HOURS = 48  # number of hours in future to check for upcoming launches
 SECONDS_IN_HOUR = 3600  # time between requests in seconds
 REQUEST_ERROR_COOLDOWN = 600  # time between requests if there is an error
 
@@ -52,12 +52,13 @@ def get_env_with_default(env_var: str, default: str) -> str:
     return os.environ[env_var]
 
 
-def parse_args() -> dict:
-    """parse arguments and return them as a dict"""
+def parse_args() -> argparse.Namespace:
+    """Configure ArgParse and Parse CLI Arguments"""
     parser = argparse.ArgumentParser(
         description="A tool which checks for upcoming space launches "
-        "using the free tier of the space launch library 2 API. "
-        "More information about the API can be found here: https://thespacedevs.com/llapi"
+        "using the space launch library API. "
+        "More information about the API can be found here:"
+        " https://thespacedevs.com/llapi"
     )
     parser.add_argument(
         "-d",
@@ -68,42 +69,36 @@ def parse_args() -> dict:
         help="enable debug logging",
     )
     parser.add_argument(
-        "-w",
+        "--config",
+        type=str,
+        dest="config",
+        help=f"specify the config file path # Default `{DEFAULT_CONFIG_PATH}`",
+        default=get_env_with_default("LAUNCHES_CONFIG", DEFAULT_CONFIG_PATH),
+    )
+    parser.add_argument(
+        "--window",
         metavar="WINDOW",
         dest="window",
         type=int,
-        help="find launches within WINDOW hours",
+        help=f"specify the time window to find launches # Default: {DEFAULT_WINDOW_HOURS} hours",
         default=DEFAULT_WINDOW_HOURS,
     )
     parser.add_argument(
-        "--notif",
+        "--service",
         action="store_true",
-        dest="normal_notif",
-        help="send a notification if upcoming launches within WINDOW (ignored in service mode)",
+        dest="service",
+        help="run as a service checking for upcoming launches repeatedly",
     )
-    parser.add_argument(
-        "--service-mode",
-        action="store_true",
-        dest="service_mode",
-        help="repeatedly check for upcoming launches until user exits with `Ctrl+C`",
-    )
-    parser.add_argument(
-        "-r",
+    arg_group = parser.add_argument_group("service mode arguments")
+    arg_group.add_argument(
+        "--repeat",
         metavar="REPEAT",
         type=int,
         dest="repeat",
-        help="repeat checks ever REPEAT hours (service mode only)",
+        help=f"specify the frequency of checks # Default: {DEFAULT_REPEAT_HOURS} hours",
         default=DEFAULT_REPEAT_HOURS,
     )
-    parser.add_argument(
-        "--config-path",
-        type=str,
-        dest="config_path",
-        help=f"notification service config path default=`{DEFAULT_CONFIG_PATH}`",
-        default=get_env_with_default("LAUNCHES_CONFIG", DEFAULT_CONFIG_PATH),
-    )
-    args = parser.parse_args()
-    return vars(args)
+    return parser.parse_args()
 
 
 def check_for_upcoming_launches(
@@ -153,10 +148,10 @@ def cli():
 
     # configure logging
     logger.remove()
-    if args["debug_logging"]:
+    if args.debug_logging:
         # debugging level override
         logger.add(sys.stderr, level="DEBUG")
-    elif args["service_mode"]:
+    elif args.service:
         # configure info level logging by default in service mode
         logger.add(sys.stderr, level="INFO")
     else:
@@ -166,20 +161,20 @@ def cli():
     logger.debug("args: {}", args)
 
     # load config
-    config = load_config(args["config_path"])
+    config = load_config(args.config)
     window_hours = (
-        config.search_window_hours if config.search_window_hours is not None else args["window"]
+        config.search_window_hours if config.search_window_hours is not None else args.window
     )
     repeat_hours = (
-        config.search_repeat_hours if config.search_repeat_hours is not None else args["repeat"]
+        config.search_repeat_hours if config.search_repeat_hours is not None else args.repeat
     )
 
-    if args["service_mode"] or args["normal_notif"]:
+    if args.service:
         notification_handlers = get_notification_handlers(config.notification_handlers)
     else:
         notification_handlers = [NotificationHandler(JinjaRenderer(), StdOutNotificationService())]
 
-    if args["service_mode"]:
+    if args.service:
         check_for_upcoming_launches_scheduled(window_hours, repeat_hours, notification_handlers)
     else:
         check_for_upcoming_launches(window_hours, notification_handlers)
