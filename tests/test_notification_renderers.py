@@ -4,42 +4,108 @@ Copyright ©️ 2024 Scott Cummings
 SPDX-License-Identifier: MIT OR Apache-2.0
 """
 
-from launches.notifications.renderers import JinjaRenderer, format_time, localize_time
+from launches.notifications.renderers import HTML_TEMPLATE, JinjaRenderer, format_time, localize_time
 
-RENDERED_BODY = """Upcoming Space Launches:
+TXT_RENDERED_BODY = """Upcoming Space Launches:
 
 Launch 1:
-    Name: Falcon 9 Block 5 | Starlink Group 7-7
+    Name: Firefly Alpha | FLTA005 (Noise of Summer)
     Status: Go for Launch
 
     Launch Window:
         Start:
-            Sun Nov 19 00:55:00 2023 CST
-            Sun Nov 19 06:55:00 2023 UTC
+            Mon Jul  1 23:03:00 2024 CDT
+            Tue Jul  2 04:03:00 2024 UTC
         End:
-            Sun Nov 19 04:52:20 2023 CST
-            Sun Nov 19 10:52:20 2023 UTC
+            Mon Jul  1 23:33:00 2024 CDT
+            Tue Jul  2 04:33:00 2024 UTC
 
     Launch Service Provider:
-        Name: SpaceX
+        Name: Firefly Aerospace
         Type: Commercial
 
     Rocket:
-        Name: Falcon 9 Block 5
+        Name: Firefly Alpha
 
     Mission:
-        Name: Starlink Group 7-7
-        Description: A batch of satellites for the Starlink mega-constellation - SpaceX's project for space-based Internet communication system.
+        Name: FLTA005 (Noise of Summer)
+        Description: Fourth flight of the Firefly Alpha small sat launcher, carrying eight cubesats for NASA's ELaNa 43 (Educational Launch of a Nanosatellite) mission.
         Orbit: Low Earth Orbit
         Agencies:
-            Name: SpaceX
-            Type: Commercial
+            Name: National Aeronautics and Space Administration
+            Type: Government
             Country: USA
     Launch Pad:
-        Name: Space Launch Complex 4E
+        Name: Space Launch Complex 2W
         Location: Vandenberg SFB, CA, USA
 
 """  # noqa: E501
+
+HTML_RENDERED_BODY = """<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upcoming Space Launches</title>
+</head>
+<body>
+    <h1>Upcoming Space Launches</h1>
+
+    <div>
+        <h2>Launch 1:</h2>
+        <p>
+            <strong>Name:</strong> Firefly Alpha | FLTA005 (Noise of Summer)<br>
+            <strong>Status:</strong> Go for Launch
+        </p>
+        <strong>Launch Window</strong><br>
+        <ul>
+            <li>
+                <strong>Start:</strong><br>
+                Mon Jul  1 23:03:00 2024 CDT<br>
+                Tue Jul  2 04:03:00 2024 UTC
+            </li>
+            <li>
+                <strong>End:</strong><br>
+                Mon Jul  1 23:33:00 2024 CDT<br>
+                Tue Jul  2 04:33:00 2024 UTC
+            </li>
+        </ul>
+        <p>
+            <strong>Launch Service Provider:</strong><br>
+            Name: Firefly Aerospace<br>
+            Type: Commercial
+        </p>
+        <p>
+            <strong>Rocket:</strong> Firefly Alpha
+        </p>
+        <p>
+            <strong>Mission:</strong><br>
+            Name: FLTA005 (Noise of Summer)<br>
+            Description: Fourth flight of the Firefly Alpha small sat launcher, carrying eight cubesats for NASA&#39;s ELaNa 43 (Educational Launch of a Nanosatellite) mission.<br>
+            Orbit: Low Earth Orbit
+        </p>
+        <p>
+            <strong>Agencies:</strong><br>
+            Name: National Aeronautics and Space Administration<br>
+            Type: Government<br>
+            Country: USA<br>
+        </p>
+        <p>
+            <strong>Launch Pad:</strong><br>
+            Name: Space Launch Complex 2W<br>
+            Location: Vandenberg SFB, CA, USA
+        </p>
+        <p>
+            <strong>Info Urls:</strong><br>
+            <a href="https://fireflyspace.com/missions/noise-of-summer/" target="_blank">Noise of Summer</a><br>
+        </p>
+        <p>
+            <strong>Video Urls:</strong><br>
+            <a href="https://www.youtube.com/watch?v=F6nYZEVsMc0" target="_blank">Alpha FLTA005 &#34;Noise of Summer&#34;</a><br>
+        </p>
+    </div>
+</body>
+</html>""" # noqa: E501
 
 
 def test_jinja_renderer(valid_launches):
@@ -49,8 +115,18 @@ def test_jinja_renderer(valid_launches):
         text_renderer.render_subject(valid_launches)
         == "Notification for 1 Upcoming Space Launch(es)"
     )
-    assert text_renderer.render_text_body(valid_launches) == RENDERED_BODY
+    assert text_renderer.render_text_body(valid_launches) == TXT_RENDERED_BODY
     assert text_renderer.render_formatted_body(valid_launches) is None
+
+def test_jinja_renderer_html(valid_launches):
+    """TextRenderer should render a notification in the expected format"""
+    html_renderer = JinjaRenderer(formatted_template=HTML_TEMPLATE)
+    assert (
+        html_renderer.render_subject(valid_launches)
+        == "Notification for 1 Upcoming Space Launch(es)"
+    )
+    assert html_renderer.render_text_body(valid_launches) == TXT_RENDERED_BODY
+    assert html_renderer.render_formatted_body(valid_launches) == HTML_RENDERED_BODY
 
 
 def test_localize_time():
