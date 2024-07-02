@@ -4,7 +4,12 @@ Copyright ©️ 2024 Scott Cummings
 SPDX-License-Identifier: MIT OR Apache-2.0
 """
 
-from launches.notifications.renderers import HTML_TEMPLATE, JinjaRenderer, format_time, localize_time
+from launches.notifications.renderers import (
+    HTML_TEMPLATE,
+    JinjaRenderer,
+    format_time,
+    localize_time,
+)
 
 TXT_RENDERED_BODY = """Upcoming Space Launches:
 
@@ -105,7 +110,7 @@ HTML_RENDERED_BODY = """<!DOCTYPE html>
         </p>
     </div>
 </body>
-</html>""" # noqa: E501
+</html>"""  # noqa: E501
 
 
 def test_jinja_renderer(valid_launches):
@@ -117,6 +122,7 @@ def test_jinja_renderer(valid_launches):
     )
     assert text_renderer.render_text_body(valid_launches) == TXT_RENDERED_BODY
     assert text_renderer.render_formatted_body(valid_launches) is None
+
 
 def test_jinja_renderer_html(valid_launches):
     """TextRenderer should render a notification in the expected format"""
