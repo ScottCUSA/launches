@@ -7,18 +7,26 @@
 </head>
 <body>
     <h1>Upcoming Space Launches</h1>
-    {% for launch in results %}
+{% for launch in results %}
     <div>
         <h2>Launch {{ loop.index }}:</h2>
         <p>
             <strong>Name:</strong> {{ launch.name }}<br>
             <strong>Status:</strong> {{ launch.status.name }}
         </p>
-        <p>
-            <strong>Launch Window:</strong><br>
-            Start: {{ localize_time(launch.window_start) }}, {{ format_time(launch.window_start) }}<br>
-            End: {{ localize_time(launch.window_end) }}, {{ format_time(launch.window_end) }}
-        </p>
+        <strong>Launch Window</strong><br>
+        <ul>
+            <li>
+                <strong>Start:</strong><br>
+                {{ localize_time(launch.window_start) }}<br>
+                {{ format_time(launch.window_start) }}
+            </li>
+            <li>
+                <strong>End:</strong><br>
+                {{ localize_time(launch.window_end) }}<br>
+                {{ format_time(launch.window_end) }}
+            </li>
+        </ul>
         <p>
             <strong>Launch Service Provider:</strong><br>
             Name: {{ launch.launch_service_provider.name }}<br>
@@ -35,18 +43,34 @@
         </p>
         <p>
             <strong>Agencies:</strong><br>
-            {% for agency in launch.mission.agencies %}
+            {% for agency in launch.mission.agencies -%}
             Name: {{ agency.name }}<br>
             Type: {{ agency.type }}<br>
             Country: {{ agency.country_code }}<br>
-            {% endfor %}
+        {% endfor -%}
         </p>
         <p>
             <strong>Launch Pad:</strong><br>
             Name: {{ launch.pad.name }}<br>
             Location: {{ launch.pad.location.name }}
         </p>
+        {% if launch.infoURLs|length > 0 -%}
+        <p>
+            <strong>Info Urls:</strong><br>
+            {% for url in launch.infoURLs -%}
+              <a href="{{url.url}}" target="_blank">{{url.title}}</a><br>
+        {% endfor -%}
+        </p>
+        {% endif -%}
+        {% if launch.vidURLs|length > 0 -%}
+        <p>
+            <strong>Video Urls:</strong><br>
+            {% for url in launch.vidURLs -%}
+              <a href="{{url.url}}" target="_blank">{{url.title}}</a><br>
+        {% endfor -%}
+        </p>
+    {% endif -%}
     </div>
-    {% endfor %}
+{% endfor -%}
 </body>
 </html>

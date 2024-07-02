@@ -56,6 +56,7 @@ def get_upcoming_launches_within_window(
     parameters = {
         "window_start__lt": window_start_lt.strftime(LAUNCH_DT_FORMAT),
         "hide_recent_previous": True,
+        "mode": "detailed",
     }
 
     resp = ll2_get(LL2_UPCOMING_ENDPOINT, parameters)

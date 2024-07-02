@@ -60,6 +60,7 @@ def test_get_upcoming_launches_within_window(mock_check_response: MagicMock, moc
     parameters = {
         "window_start__lt": "2024-01-01T12:00:00Z",
         "hide_recent_previous": True,
+        "mode": "detailed",
     }
 
     # test
@@ -80,6 +81,7 @@ def test_get_upcoming_launches_within_window_invalid_json(mock_ll2_get):
     parameters = {
         "window_start__lt": "2024-01-01T12:00:00Z",
         "hide_recent_previous": True,
+        "mode": "detailed",
     }
 
     # test
@@ -103,6 +105,7 @@ def test_get_upcoming_launches_within_window_invalid_response(
     parameters = {
         "window_start__lt": "2024-01-01T12:00:00Z",
         "hide_recent_previous": True,
+        "mode": "detailed",
     }
 
     # test
