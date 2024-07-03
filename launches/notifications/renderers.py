@@ -19,7 +19,7 @@ JINJA_ENV = Environment(
 TXT_TEMPLATE = "launches.j2.txt"
 HTML_TEMPLATE = "launches.j2.html"
 BODY_TZ = "US/Central"
-BODY_DT_FORMAT = "%c %Z"
+BODY_DT_FORMAT = "%a %b %d %Y %X %Z"
 
 
 class NotificationRenderer(Protocol):
@@ -88,9 +88,9 @@ def get_notification_renderer(renderer: str) -> NotificationRenderer:
             return JinjaRenderer(formatted_template=TXT_TEMPLATE)
 
 
-def localize_time(iso_time: str) -> str:
+def local_format_time(iso_time: str) -> str:
     """Localize iso_time to
-    TEMPLATE_TZ and TEMPLATE_DT_FORMAT"""
+    TEMPLATE_TZ and BODY_DT_FORMAT"""
     try:
         # convert str time to naive datetime
         dt = datetime.strptime(iso_time, LAUNCH_DT_FORMAT)
@@ -119,5 +119,5 @@ def format_time(iso_time: str) -> str:
 
 
 # add custom time formatting functions to jinja2 env
-JINJA_ENV.globals["localize_time"] = localize_time
+JINJA_ENV.globals["local_format_time"] = local_format_time
 JINJA_ENV.globals["format_time"] = format_time
