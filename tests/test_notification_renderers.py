@@ -8,7 +8,7 @@ from launches.notifications.renderers import (
     HTML_TEMPLATE,
     JinjaRenderer,
     format_time,
-    localize_time,
+    local_format_time,
 )
 
 TXT_RENDERED_BODY = """Upcoming Space Launches:
@@ -19,11 +19,11 @@ Launch 1:
 
     Launch Window:
         Start:
-            Mon Jul  1 23:03:00 2024 CDT
-            Tue Jul  2 04:03:00 2024 UTC
+            Mon Jul 01 2024 23:03:00 CDT
+            Tue Jul 02 2024 04:03:00 UTC
         End:
-            Mon Jul  1 23:33:00 2024 CDT
-            Tue Jul  2 04:33:00 2024 UTC
+            Mon Jul 01 2024 23:33:00 CDT
+            Tue Jul 02 2024 04:33:00 UTC
 
     Launch Service Provider:
         Name: Firefly Aerospace
@@ -66,13 +66,13 @@ HTML_RENDERED_BODY = """<!DOCTYPE html>
         <ul>
             <li>
                 <strong>Start:</strong><br>
-                Mon Jul  1 23:03:00 2024 CDT<br>
-                Tue Jul  2 04:03:00 2024 UTC
+                Mon Jul 01 2024 23:03:00 CDT<br>
+                Tue Jul 02 2024 04:03:00 UTC
             </li>
             <li>
                 <strong>End:</strong><br>
-                Mon Jul  1 23:33:00 2024 CDT<br>
-                Tue Jul  2 04:33:00 2024 UTC
+                Mon Jul 01 2024 23:33:00 CDT<br>
+                Tue Jul 02 2024 04:33:00 UTC
             </li>
         </ul>
         <p>
@@ -135,21 +135,21 @@ def test_jinja_renderer_html(valid_launches):
     assert html_renderer.render_formatted_body(valid_launches) == HTML_RENDERED_BODY
 
 
-def test_localize_time():
-    """localize_time should return a string in the expected format"""
-    assert localize_time("2023-11-19T10:52:20Z") == "Sun Nov 19 04:52:20 2023 CST"
+def test_local_format_time():
+    """local_format_time should return a string in the expected format"""
+    assert local_format_time("2023-11-19T10:52:20Z") == "Sun Nov 19 2023 04:52:20 CST"
 
 
-def test_localize_unexpected_time_format():
-    """localize_time should return an empty string if the input is not in the expected format"""
-    assert localize_time("2023-11-19") == ""
-    assert localize_time("2023-11-19T10:52:20") == ""
-    assert localize_time("2023-11-19 10:52:20") == ""
+def test_local_unexpected_time_format():
+    """local_format_time should return an empty string if the input is not in the expected format"""
+    assert local_format_time("2023-11-19") == ""
+    assert local_format_time("2023-11-19T10:52:20") == ""
+    assert local_format_time("2023-11-19 10:52:20") == ""
 
 
 def test_format_time():
     """format_time should return a string in the expected format"""
-    assert format_time("2023-11-19T10:52:20Z") == "Sun Nov 19 10:52:20 2023 UTC"
+    assert format_time("2023-11-19T10:52:20Z") == "Sun Nov 19 2023 10:52:20 UTC"
 
 
 def test_format_unexpected_time_format():

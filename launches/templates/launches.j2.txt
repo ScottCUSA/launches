@@ -6,10 +6,10 @@ Launch {{loop.index}}:
 
     Launch Window:
         Start:
-            {{ localize_time(launch.window_start) }}
+            {{ local_format_time(launch.window_start) }}
             {{ format_time(launch.window_start) }}
         End:
-            {{ localize_time(launch.window_end) }}
+            {{ local_format_time(launch.window_end) }}
             {{ format_time(launch.window_end) }}
 
     Launch Service Provider:
