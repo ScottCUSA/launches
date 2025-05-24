@@ -55,4 +55,4 @@ line-length = 100
 select = ["B", "E", "F", "I", "N", "S", "W", "RUF"]
 
 [tool.ruff.lint.per-file-ignores]
-"**/{tests,docs,tools}/*" = ["E402", "S101", "ANN"]
+"**/{tests,docs,tools}/*" = ["E402", "S101", "ANN", "RUF001"]
