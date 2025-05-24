@@ -5,14 +5,25 @@ SPDX-License-Identifier: MIT OR Apache-2.0
 """
 
 import sys
+from typing import Protocol
 
 from loguru import logger
 
 from launches.config import NotificationHandlerConfig
 from launches.notifications.services.gmail import GmailNotificationService
-from launches.notifications.services.protocol import NotificationService
 from launches.notifications.services.smtp_email import SMTPEmaiLNotificationService
 from launches.notifications.services.stdout import StdOutNotificationService
+
+
+class NotificationService(Protocol):
+    """The protocol a notification service needs to follow"""
+
+    def send(self, subject: str, msg: str, formatted_msg: str | None) -> None:
+        """send notification"""
+        raise NotImplementedError()
+
+    def __repr__(self) -> str:
+        raise NotImplementedError()
 
 
 def get_notification_service(
