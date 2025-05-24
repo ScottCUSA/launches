@@ -1,4 +1,4 @@
-"""Space Launch Notifications - Notifications Services Module
+"""Space Launch Notifications - SMTP Email Notification Service
 
 Copyright ©️ 2024 Scott Cummings
 SPDX-License-Identifier: MIT OR Apache-2.0
@@ -7,29 +7,15 @@ SPDX-License-Identifier: MIT OR Apache-2.0
 import base64
 import smtplib
 import ssl
-import sys
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from typing import Protocol
 
 from loguru import logger
 
-from launches.config import NotificationHandlerConfig
 from launches.errors import NotificationError
 
 
-class NotificationService(Protocol):
-    """The protocol a notification service needs to follow"""
-
-    def send(self, subject: str, msg: str, formatted_msg: str | None) -> None:
-        """send notification"""
-        raise NotImplementedError()
-
-    def __repr__(self) -> str:
-        raise NotImplementedError()
-
-
-class EmailNotificationService:
+class SMTPEmaiLNotificationService:
     """An email notification service which connects to
     a SMTP server with the credentials provided"""
 
@@ -83,6 +69,8 @@ class EmailNotificationService:
                 context = ssl.create_default_context()
             except ssl.SSLError as ex:
                 raise NotificationError("Unable to make secure connection to SMTP server.") from ex
+        else:
+            context = None
 
         try:
             with smtplib.SMTP(
@@ -110,56 +98,3 @@ class EmailNotificationService:
             f"EmailNotificationService(smtp_server='{self.server}',"
             f" smtp_port={self.port}, use_tls={self.use_tls})"
         )
-
-
-class StdOutNotificationService:
-    """A "dummy" notification service which just prints to stdout"""
-
-    def __init__(self, *_args, **_kwargs) -> None:
-        logger.info("Initialized {}", self)
-
-    def send(self, subject: str, msg: str, formatted_msg: str | None) -> None:
-        """print notification to stdout"""
-        logger.info("Sending StdOut Notification")
-        print(subject)
-        print(msg)
-
-    def __repr__(self) -> str:
-        return "StdOutNotificationService()"
-
-
-def get_notification_service(
-    service_config: NotificationHandlerConfig,
-) -> NotificationService:
-    """This function returns a notification service built from
-    the service configuration
-
-    Expected Format:
-    {
-        "service": "stdout",
-        "renderer":"text",   // ignored
-        "parameters": {}
-    }
-
-    This function will exit the tool if an error is encountered loading
-    the service, or required configuration parameters are missing.
-    """
-    try:
-        logger.info(
-            "Attempting to load notification service: {}",
-            service_config.service,
-        )
-        match service_config.service:
-            case "email":
-                return EmailNotificationService(**service_config.parameters)
-            case "stdout":
-                return StdOutNotificationService()
-            case _:
-                logger.error(
-                    "Unknown notification service {}",
-                    service_config.service,
-                )
-                sys.exit(1)
-    except (ValueError, TypeError, KeyError) as ex:
-        logger.error("Unable to load notification service: {}", ex)
-        sys.exit(1)

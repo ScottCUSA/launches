@@ -13,23 +13,15 @@ SPDX-License-Identifier: MIT OR Apache-2.0
 import argparse
 import os
 import sys
-import time
 
-import schedule
 from loguru import logger
 
 from launches.config import load_config
-from launches.errors import LaunchesError
-from launches.launches import (
-    get_upcoming_launches,
-    send_notification,
-)
+from launches.launches import check_for_upcoming_launches, check_for_upcoming_launches_scheduled
+from launches.ll2 import LaunchLibrary2Client
 from launches.notifications.handlers import (
-    NotificationHandler,
     get_notification_handlers,
 )
-from launches.notifications.renderers import JinjaRenderer
-from launches.notifications.services import StdOutNotificationService
 
 DEFAULT_CONFIG_PATH = "config.json"
 DEFAULT_REPEAT_HOURS = 24  # number of hours between checks for upcoming launches
@@ -89,6 +81,13 @@ def parse_args() -> argparse.Namespace:
         dest="service",
         help="run as a service checking for upcoming launches repeatedly",
     )
+    parser.add_argument(
+        "--env",
+        choices=("dev", "prod"),
+        dest="env",
+        default="prod",
+        help="specify the ll2 environment",
+    )
     arg_group = parser.add_argument_group("service mode arguments")
     arg_group.add_argument(
         "--repeat",
@@ -99,45 +98,6 @@ def parse_args() -> argparse.Namespace:
         default=DEFAULT_REPEAT_HOURS,
     )
     return parser.parse_args()
-
-
-def check_for_upcoming_launches(
-    window_hours: int,
-    notification_handlers: list[NotificationHandler],
-) -> None:
-    """run a check for upcoming launches"""
-    logger.info("Checking for upcoming launches within a {} hour window", window_hours)
-
-    try:
-        launches = get_upcoming_launches(window_hours)
-    except LaunchesError as ex:
-        logger.exception("Exception occured while attempting to get upcoming launches", ex)
-        return
-
-    if launches["count"] > 0:
-        # render subject and body for notification
-        send_notification(launches, notification_handlers)
-    else:
-        logger.info(f"No upcoming launches found within a {window_hours} hour window.")
-
-
-def check_for_upcoming_launches_scheduled(
-    window_hours: int,
-    repeat_hours: int,
-    notification_handlers: list[NotificationHandler],
-) -> None:
-    """run a check for upcoming launches in service mode"""
-
-    schedule.every(repeat_hours).hours.do(
-        check_for_upcoming_launches, window_hours, notification_handlers
-    )
-
-    # run a check immediately
-    check_for_upcoming_launches(window_hours, notification_handlers)
-
-    while True:
-        schedule.run_pending()
-        time.sleep(1)
 
 
 def cli():
@@ -162,19 +122,22 @@ def cli():
 
     # load config
     config = load_config(args.config)
+    logger.debug("config: {}", config)
+
     window_hours = (
         config.search_window_hours if config.search_window_hours is not None else args.window
     )
     repeat_hours = (
         config.search_repeat_hours if config.search_repeat_hours is not None else args.repeat
     )
+    env = args.env
+    ll2_client = LaunchLibrary2Client(env)
+
+    notification_handlers = get_notification_handlers(config.notification_handlers)
 
     if args.service:
-        notification_handlers = get_notification_handlers(config.notification_handlers)
+        check_for_upcoming_launches_scheduled(
+            window_hours, repeat_hours, notification_handlers, ll2_client
+        )
     else:
-        notification_handlers = [NotificationHandler(JinjaRenderer(), StdOutNotificationService())]
-
-    if args.service:
-        check_for_upcoming_launches_scheduled(window_hours, repeat_hours, notification_handlers)
-    else:
-        check_for_upcoming_launches(window_hours, notification_handlers)
+        check_for_upcoming_launches(window_hours, notification_handlers, ll2_client)

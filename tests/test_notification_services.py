@@ -9,7 +9,7 @@ from unittest.mock import patch
 
 from launches.config import NotificationHandlerConfig
 from launches.notifications.services import (
-    EmailNotificationService,
+    SMTPEmaiLNotificationService,
     StdOutNotificationService,
     get_notification_service,
 )
@@ -45,7 +45,7 @@ def test_get_notification_service_email():
     with patch("sys.exit") as mock_exit:
         notification_service = get_notification_service(service_config)
 
-    assert isinstance(notification_service, EmailNotificationService)
+    assert isinstance(notification_service, SMTPEmaiLNotificationService)
     assert mock_exit.call_count == 0
 
 
