@@ -51,6 +51,16 @@ def load_config(config_path: str) -> LaunchesConfig:
                     "sender":"",
                     "recipients": ["",""]
                 }
+            },
+            {
+                "service":"gmail",
+                "renderer": "html",
+                "parameters":{
+                    "credentials_file":"credentials.json",
+                    "token_file":"token.json",
+                    "sender":"",
+                    "recipients": ["",""]
+                }
             }
         ]
     }

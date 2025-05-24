@@ -4,10 +4,10 @@ Copyright ©️ 2024 Scott Cummings
 SPDX-License-Identifier: MIT OR Apache-2.0
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Protocol
+from zoneinfo import ZoneInfo
 
-import pytz
 from jinja2 import Environment, PackageLoader, Template, select_autoescape
 from loguru import logger
 
@@ -97,9 +97,9 @@ def local_format_time(iso_time: str) -> str:
     except ValueError:
         return ""
     # set timezone to UTC
-    dt = dt.replace(tzinfo=pytz.utc)
+    dt = dt.replace(tzinfo=timezone.utc)
     # change timezone
-    dt_offset = dt.astimezone(pytz.timezone(BODY_TZ))
+    dt_offset = dt.astimezone(ZoneInfo(BODY_TZ))
     # output datetime in template format
     return dt_offset.strftime(BODY_DT_FORMAT)
 
@@ -113,7 +113,7 @@ def format_time(iso_time: str) -> str:
     except ValueError:
         return ""
     # set timezone to UTC
-    dt = dt.replace(tzinfo=pytz.utc)
+    dt = dt.replace(tzinfo=timezone.utc)
     # output datetime in template format
     return dt.strftime(BODY_DT_FORMAT)
 
