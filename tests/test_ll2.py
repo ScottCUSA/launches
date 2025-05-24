@@ -5,7 +5,7 @@ SPDX-License-Identifier: MIT OR Apache-2.0
 """
 
 import json
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -89,7 +89,9 @@ def test_get_upcoming_launches_within_window(mock_check_response, mock_ll2_get):
     response = {"count": 10, "results": [{}]}
     mock_ll2_get.return_value = MagicMock(json=MagicMock(return_value=response), text="{}")
     mock_check_response.return_value = None
-    window_start_lt = datetime(tzinfo=UTC, year=2024, month=1, day=1, hour=12, minute=0, second=0)
+    window_start_lt = datetime(
+        tzinfo=timezone.utc, year=2024, month=1, day=1, hour=12, minute=0, second=0
+    )
     parameters = {
         "window_start__lt": "2024-01-01T12:00:00Z",
         "hide_recent_previous": True,
@@ -112,7 +114,9 @@ def test_get_upcoming_launches_within_window_invalid_json(mock_ll2_get):
     mock_ll2_get.return_value = MagicMock(
         json=MagicMock(side_effect=json.JSONDecodeError("", "", 0)), text="{}"
     )
-    window_start_lt = datetime(tzinfo=UTC, year=2024, month=1, day=1, hour=12, minute=0, second=0)
+    window_start_lt = datetime(
+        tzinfo=timezone.utc, year=2024, month=1, day=1, hour=12, minute=0, second=0
+    )
     parameters = {
         "window_start__lt": "2024-01-01T12:00:00Z",
         "hide_recent_previous": True,
@@ -136,7 +140,9 @@ def test_get_upcoming_launches_within_window_invalid_response(mock_check_respons
     c = LaunchLibrary2Client()
     mock_ll2_get.return_value = MagicMock(json=MagicMock(return_value={}), text="{}")
     mock_check_response.side_effect = LL2RequestError("unexpected response")
-    window_start_lt = datetime(tzinfo=UTC, year=2024, month=1, day=1, hour=12, minute=0, second=0)
+    window_start_lt = datetime(
+        tzinfo=timezone.utc, year=2024, month=1, day=1, hour=12, minute=0, second=0
+    )
     parameters = {
         "window_start__lt": "2024-01-01T12:00:00Z",
         "hide_recent_previous": True,

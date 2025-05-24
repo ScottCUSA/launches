@@ -13,10 +13,9 @@ SPDX-License-Identifier: MIT OR Apache-2.0
 
 import time
 from collections.abc import Sequence
-from datetime import UTC, datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any
 
-import pytz
 import schedule
 from loguru import logger
 
@@ -31,7 +30,7 @@ def get_window_datetime(window_hours: int) -> datetime:
     CHECK_EVERY_HOURS number of hours in the future"""
     if window_hours <= 0:
         raise ValueError("window_hours must be a positive int")
-    return datetime.now(pytz.utc) + timedelta(hours=window_hours)
+    return datetime.now(timezone.utc) + timedelta(hours=window_hours)
 
 
 def get_upcoming_launches(window_hours: int, env: str = "prod") -> dict[str, Any]:
@@ -72,7 +71,7 @@ def check_for_upcoming_launches(
     from datetime import datetime, timedelta
 
     try:
-        window_start_lt = datetime.now(tz=UTC) + timedelta(hours=window_hours)
+        window_start_lt = datetime.now(tz=timezone.utc) + timedelta(hours=window_hours)
         launches = ll2_client.get_upcoming_launches_within_window(window_start_lt)
     except LaunchesError as ex:
         logger.exception("Exception occured while attempting to get upcoming launches", ex)

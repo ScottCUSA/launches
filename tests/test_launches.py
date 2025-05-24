@@ -4,11 +4,10 @@ Copyright ©️ 2024 Scott Cummings
 SPDX-License-Identifier: MIT OR Apache-2.0
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from unittest.mock import MagicMock, patch
 
 import pytest
-import pytz
 from freezegun import freeze_time
 
 from launches.errors import LaunchesError, NotificationError
@@ -23,8 +22,8 @@ from launches.launches import (
 @freeze_time("2023-11-19T06:55:00")
 def test_get_window_datetime():
     """get_window_datetime should return a datetime object # hours in the future"""
-    assert get_window_datetime(1) == datetime(2023, 11, 19, 7, 55, 0, tzinfo=pytz.utc)
-    assert get_window_datetime(24) == datetime(2023, 11, 20, 6, 55, 0, tzinfo=pytz.utc)
+    assert get_window_datetime(1) == datetime(2023, 11, 19, 7, 55, 0, tzinfo=timezone.utc)
+    assert get_window_datetime(24) == datetime(2023, 11, 20, 6, 55, 0, tzinfo=timezone.utc)
 
 
 @freeze_time("2023-11-19T06:55:00")
