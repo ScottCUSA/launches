@@ -3,9 +3,13 @@
 A tool which checks for upcoming space launches using the space launch library 2 (LL2) API and can send notifications if upcoming launches are found.
 
 The tool has two modes:
- - The normal mode performs a check for upcoming launches within a 24 hour window, and outputs any upcoming space launches on the command line.
- - The service mode performs a check for upcoming launches repeatedly, at a user configured repeat rate, until the user presses `Ctrl+C`. </br>
+ - The normal mode performs a check for upcoming launches within a 48 hour window, and outputs any upcoming space launches on the command line.
+ - The service mode performs a check for upcoming launches repeatedly, at a configurable schedule, until the user presses `Ctrl+C`. </br>
    In this mode a notification will be sent via the configured notification services if upcoming launches are found. More on this later.
+
+The service mode supports two scheduling methods:
+ - Daily Scheduling (default): Checks for upcoming launches at specific times each day (e.g., "07:00", "19:00")
+ - Periodic Scheduling: Checks for upcoming launches at fixed time intervals (e.g., every 24 hours)
 
 The tool is configurable using command-line arguments. Notification service configurations are loaded from disk from a JSON formated file.
 
@@ -85,8 +89,16 @@ __Note: An exception will be thrown at startup if there are issues loading or va
 
 ```json
 {
-    "search_window_hours":24,
-    "search_repeat_hours":24,
+    "periodic": false,
+    "search_window_hours": 48,
+    "search_repeat_hours": 24,
+    "time_zone": "America/Chicago",
+    "daily_check_times": [
+        "07:00",
+        "19:00"
+    ],
+    "cache_enabled": true,
+    "cache_directory": "./.launches_cache",
     "notification_handlers": [
         {
             "service": "",
@@ -102,21 +114,39 @@ __Note: An exception will be thrown at startup if there are issues loading or va
 }
 ```
 
- _By default in "normal mode" a `plaintext` render is used with the `stdout` (dummy) service to output upcoming launches to the command line._
+### Scheduling Configuration:
 
- _The tool can be configured to load and process notifications using the notification handlers from the config file using the `--normal-mode-notif` flag._
+The tool now defaults to using daily scheduling instead of periodic scheduling. The scheduling behavior can be configured with these parameters:
+
+- `"periodic"`: Boolean flag to choose between periodic (true) or daily (false) scheduling. Defaults to `false` (daily scheduling).
+- `"search_window_hours"`: How far ahead in the future to search for launches, in hours. Defaults to 48 hours.
+- `"search_repeat_hours"`: For periodic scheduling, how often to repeat the checks, in hours. Defaults to 24 hours.
+- `"time_zone"`: IANA timezone string (e.g., "America/Chicago") used for the daily check times. Defaults to "America/Chicago".
+- `"daily_check_times"`: Array of times (in 24-hour "HH:MM" format) to check for launches each day. Defaults to ["07:00", "19:00"].
+
+### Cache Configuration:
+
+The tool implements a caching mechanism to avoid sending duplicate notifications for launches that haven't changed since the last check. This is particularly useful in service mode, where checks are performed repeatedly. The cache stores information about previously seen launches and only triggers notifications when new launches are detected or existing launches have significant changes.
+
+A launch is considered to have "significantly changed" if any of the following occurs:
+- The launch status changes (e.g., from "To Be Confirmed" to "Go for Launch")
+- The launch window start time changes
+- New information URLs are added
+- New video URLs are added
+- The "No Earlier Than" (NET) date changes
+
+Cache configuration parameters:
+
+- `"cache_enabled"`: Boolean flag to enable or disable the caching mechanism. Defaults to `true`.
+- `"cache_directory"`: The directory where the cache file will be stored. Defaults to "./.launches_cache".
 
 ### Notification Services
-The tool supports customizable notification services. At this time the only notification services implemented are a `stdout` service (essentially a dummy service), and an `email` service. Additional notification services could be added in the future. The tool is designed to make doing so require very refactoring.
-
-_Implementation detail: To add a new notification service. Create a new service class which follows the NotificationService protocol and add a case statement for it to the get_notification_service function in notification_services.py_
+The tool supports customizable notification services. At this time the notification services implemented are a `stdout` service, an SMTP`email` service, and a `gmail` service. 
 
 #### Notification Renders
-The tool supports customizable notification renderers on a per-service basis. At this time only a `plaintext` render is currently implemented. Additional renderers may be added in the future. The tool is designed to make doing so require little refactoring.
+The tool supports customizable notification renderers on a per-service basis. At this time the renderers implemented include `plaintext` and `html`. Additional renderers may be added in the future.
 
 If no render is configured `plaintext` will be used.
-
-_Implementation detail: To add a new notification renderer. Create a new renderer class which follows the NotificationRenderer protocol and add a case statement for it to the get_notification_render function in notification_renderers.py_
 
 #### StdOut Notification Service Configuration
 There are no configurable parameters for this service.
@@ -133,7 +163,7 @@ There are no configurable parameters for this service.
 }
 ```
 
-#### Email Notification Service Configuration
+#### SMTP Email Notification Service Configuration
 The following describes the parameters for the email notification service. All parameters are required unless otherwise noted.
  - `"smtp_server"`: The network hostname of a SMTP server which can be used to send emails
  - `"smtp_port"`: The network port of the SMTP server
@@ -150,18 +180,56 @@ The following describes the parameters for the email notification service. All p
             "service": "email",
             "renderer": "plaintext",
             "parameters": {
-                "smtp_server": "smtp-mail.outlook.com",
+                "smtp_server": "smtp.example.com",
                 "smtp_port": 587,
                 "use_tls": true,
-                "smtp_username": "email@outlook.com",  
+                "smtp_username": "email@example.com",  
                 "smtp_password": "base64encodedpassword",
-                "sender": "email@outlook.com",
-                "recipients": ["email@outlook.com"]
+                "sender": "email@example.com",
+                "recipients": ["email@example.com"]
             }
         }
     ]
 }
 ```
+
+#### Gmail Notification Service Configuration
+
+> **Important Note!**
+> The Gmail notification service requires Google API Client credentials that are not provided with this tool. Also, this notification service will ONLY work in a desktop environment as it requires the ability for users to log into their Google account through a browser to obtain a refresh token.
+
+The Gmail notification service uses the Google Gmail API to send emails through a Gmail account. It requires OAuth2 authentication, which is handled by the Google API Client libraries. The first time you run the tool with Gmail notification enabled, it will open a browser window and ask you to authenticate with your Google account.
+
+The following describes the parameters for the Gmail notification service. All parameters are required.
+ - `"credentials_file"`: Path to the Google API credentials file (JSON format) obtained from the Google Cloud Console
+ - `"token_file"`: Path where the OAuth2 refresh token will be stored after authentication
+ - `"sender"`: Sending email address. Used in the "From:" field of emails.
+ - `"recipients"`: A single or list of recipient email addresses. Used in the "To:" field of emails.
+
+```json
+{
+    "notification_handlers": [
+        {
+            "service": "gmail",
+            "renderer": "html",
+            "parameters": {
+                "credentials_file": "credentials.json",
+                "token_file": "token.json",
+                "sender": "email@example.com",
+                "recipients": ["email@example.com"]
+            }
+        }
+    ]
+}
+```
+
+To use the Gmail notification service, you must:
+1. Create a Google Cloud Platform project
+2. Enable the Gmail API
+3. Create OAuth2 credentials (Desktop client)
+4. Download the credentials as a JSON file and save it as specified in your config
+
+The first time the service runs, it will prompt you to authorize the application by opening a browser window.
 
 ## Space Launch Library 2 (LL2) API:
 This tool makes use of the free-tier of the Space Launch Libary 2 rest API.
@@ -183,5 +251,5 @@ More information the LL2 API, and about The Space Devs is here:
  - https://www.patreon.com/TheSpaceDevs
 
 ## License:
-> Copyright ©️ 2024 Scott Cummings </br>
+> Copyright ©️ 2025 Scott Cummings </br>
 > Apache-2.0 OR MIT
