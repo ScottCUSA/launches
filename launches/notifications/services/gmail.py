@@ -1,6 +1,6 @@
 """Space Launch Notifications - Gmail Notification Service
 
-Copyright ©️ 2024 Scott Cummings
+Copyright ©️ 2025 Scott Cummings
 SPDX-License-Identifier: MIT OR Apache-2.0
 """
 

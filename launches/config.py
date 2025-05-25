@@ -4,7 +4,7 @@
 # README.md
 See the readme for additional documentation on the tool/service
 
-Copyright ©️ 2024 Scott Cummings
+Copyright ©️ 2025 Scott Cummings
 SPDX-License-Identifier: MIT OR Apache-2.0
 """
 

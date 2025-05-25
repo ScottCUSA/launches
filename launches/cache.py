@@ -3,7 +3,7 @@
 This module provides caching functionality for launch responses to avoid
 redundant notifications for unchanged launches.
 
-Copyright ©️ 2024 Scott Cummings
+Copyright ©️ 2025 Scott Cummings
 SPDX-License-Identifier: MIT OR Apache-2.0
 """
 
