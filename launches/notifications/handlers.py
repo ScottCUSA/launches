@@ -3,7 +3,7 @@
 This module composes NotificationRenderers and NotificationServices and
 handles construction of both from the projects configuration
 
-Copyright ©️ 2024 Scott Cummings
+Copyright ©️ 2025 Scott Cummings
 SPDX-License-Identifier: MIT OR Apache-2.0
 """
 

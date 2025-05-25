@@ -1,6 +1,6 @@
 """unittests for launches.notifications.handlers
 
-Copyright ©️ 2024 Scott Cummings
+Copyright ©️ 2025 Scott Cummings
 SPDX-License-Identifier: MIT OR Apache-2.0
 """
 
