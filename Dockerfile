@@ -1,5 +1,5 @@
 # Start from a base image
-FROM ghcr.io/astral-sh/uv:alpine as runtime
+FROM ghcr.io/astral-sh/uv:debian-slim as runtime
 
 # Set a working directory
 WORKDIR /app
