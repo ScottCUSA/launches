@@ -87,10 +87,13 @@ def check_for_upcoming_launches(
 
         # Filter for changes if cache is enabled
         if cache is not None:
-            launches = cache.get_changed_launches(launches)
+            changed_launches = cache.get_changed_launches(launches)
             logger.info(
-                "Changed launches: {}/{}", launches["count"], "total count from original response"
+                "Changed launches: {}/{}",
+                changed_launches["count"],
+                launches["count"],
             )
+            launches = changed_launches
     except LaunchesError as ex:
         logger.exception("Exception occured while attempting to get upcoming launches", ex)
         return
