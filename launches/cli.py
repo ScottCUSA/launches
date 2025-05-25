@@ -30,7 +30,7 @@ from launches.notifications.handlers import (
 
 DEFAULT_CONFIG_PATH = "config.json"
 DEFAULT_CHECK_INTERVAL_HOURS = 24  # default hours between checks for periodic upcoming launches
-DEFAULT_FORECAST_WINDOW_HOURS = 72  # default hours in future to check for upcoming launches
+DEFAULT_FORECAST_WINDOW_HOURS = 48  # default hours in future to check for upcoming launches
 DEFAULT_DAILY_CHECK_TIMES = ["07:00", "19:00"]  # default times to check for upcoming launches
 DEFAULT_TIMEZONE = "America/Chicago"  # default daily schedule timezone
 DEFAULT_CACHE_DIR = "./.launches_cache"

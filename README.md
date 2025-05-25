@@ -3,7 +3,7 @@
 A tool which checks for upcoming space launches using the space launch library 2 (LL2) API and can send notifications if upcoming launches are found.
 
 The tool has two modes:
- - The normal mode performs a check for upcoming launches within a 24 hour window, and outputs any upcoming space launches on the command line.
+ - The normal mode performs a check for upcoming launches within a 48 hour window, and outputs any upcoming space launches on the command line.
  - The service mode performs a check for upcoming launches repeatedly, at a configurable schedule, until the user presses `Ctrl+C`. </br>
    In this mode a notification will be sent via the configured notification services if upcoming launches are found. More on this later.
 

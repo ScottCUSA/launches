@@ -55,7 +55,7 @@ class LaunchLibrary2Client:
         self,
         window_start_lt: datetime,
     ) -> dict[str, Any]:
-        """Make a request to the space launch libary for upcoming launches where the
+        """Make a request to the space launch library for upcoming launches where the
         window is less than the provided datetime raises a RequestError
         if there are issues with the request or response.
 
