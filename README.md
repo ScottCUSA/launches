@@ -4,8 +4,12 @@ A tool which checks for upcoming space launches using the space launch library 2
 
 The tool has two modes:
  - The normal mode performs a check for upcoming launches within a 24 hour window, and outputs any upcoming space launches on the command line.
- - The service mode performs a check for upcoming launches repeatedly, at a user configured repeat rate, until the user presses `Ctrl+C`. </br>
+ - The service mode performs a check for upcoming launches repeatedly, at a configurable schedule, until the user presses `Ctrl+C`. </br>
    In this mode a notification will be sent via the configured notification services if upcoming launches are found. More on this later.
+
+The service mode supports two scheduling methods:
+ - Daily Scheduling (default): Checks for upcoming launches at specific times each day (e.g., "07:00", "19:00")
+ - Periodic Scheduling: Checks for upcoming launches at fixed time intervals (e.g., every 24 hours)
 
 The tool is configurable using command-line arguments. Notification service configurations are loaded from disk from a JSON formated file.
 
@@ -85,8 +89,14 @@ __Note: An exception will be thrown at startup if there are issues loading or va
 
 ```json
 {
-    "search_window_hours":24,
-    "search_repeat_hours":24,
+    "periodic": false,
+    "search_window_hours": 24,
+    "search_repeat_hours": 24,
+    "time_zone": "America/Chicago",
+    "daily_check_times": [
+        "07:00",
+        "19:00"
+    ],
     "notification_handlers": [
         {
             "service": "",
@@ -102,9 +112,16 @@ __Note: An exception will be thrown at startup if there are issues loading or va
 }
 ```
 
- _By default in "normal mode" a `plaintext` render is used with the `stdout` (dummy) service to output upcoming launches to the command line._
+### Scheduling Configuration:
 
- _The tool can be configured to load and process notifications using the notification handlers from the config file using the `--normal-mode-notif` flag._
+The tool now defaults to using daily scheduling instead of periodic scheduling. The scheduling behavior can be configured with these parameters:
+
+- `"periodic"`: Boolean flag to choose between periodic (true) or daily (false) scheduling. Defaults to `false` (daily scheduling).
+- `"search_window_hours"`: How far ahead in the future to search for launches, in hours. Defaults to 24 hours.
+- `"search_repeat_hours"`: For periodic scheduling, how often to repeat the checks, in hours. Defaults to 24 hours.
+- `"time_zone"`: IANA timezone string (e.g., "America/Chicago") used for the daily check times. Defaults to "America/Chicago".
+- `"daily_check_times"`: Array of times (in 24-hour "HH:MM" format) to check for launches each day. Defaults to ["07:00", "19:00"].
+
 
 ### Notification Services
 The tool supports customizable notification services. At this time the notification services implemented are a `stdout` service, an `email` service, and a `gmail` service. 
