@@ -8,7 +8,7 @@ WORKDIR /app
 COPY . .
 
 # Install dependencies
-RUN uv sync --locked --all-extras --dev
+RUN uv sync --locked --all-extras
 
 # Set the command to run your application
 CMD ["uv", "run", "launches", "--service"]
