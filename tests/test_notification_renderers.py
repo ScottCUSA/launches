@@ -44,7 +44,7 @@ Launch 1:
         Name: Space Launch Complex 2W
         Location: Vandenberg SFB, CA, USA
 
-"""  # noqa: E501
+"""
 
 HTML_RENDERED_BODY = """<!DOCTYPE html>
 <html lang="en">
@@ -110,7 +110,7 @@ HTML_RENDERED_BODY = """<!DOCTYPE html>
         </p>
     </div>
 </body>
-</html>"""  # noqa: E501
+</html>"""
 
 
 def test_jinja_renderer(valid_launches):

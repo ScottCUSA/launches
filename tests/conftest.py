@@ -150,7 +150,7 @@ VALID_LAUNCHES_DICT: dict[str, Any] = {
                 "type": "Commercial",
                 "country_code": "USA",
                 "abbrev": "FA",
-                "description": "Firefly Aerospace is an American private aerospace firm based in Austin, Texas, that develops small and medium-sized launch vehicles for commercial launches to orbit.",  # noqa: E501
+                "description": "Firefly Aerospace is an American private aerospace firm based in Austin, Texas, that develops small and medium-sized launch vehicles for commercial launches to orbit.",
                 "administrator": "Bill Weber",
                 "founding_year": "2014",
                 "launchers": "",
@@ -179,7 +179,7 @@ VALID_LAUNCHES_DICT: dict[str, Any] = {
                     "name": "Firefly Alpha",
                     "active": True,
                     "reusable": False,
-                    "description": "Firefly Alpha (Firefly α) is a two-stage orbital expendable launch vehicle developed by the American aerospace company Firefly Aerospace to cover the commercial small satellite launch market. Alpha is intended to provide launch options for both full vehicle and ride share customers.",  # noqa: E501
+                    "description": "Firefly Alpha (Firefly α) is a two-stage orbital expendable launch vehicle developed by the American aerospace company Firefly Aerospace to cover the commercial small satellite launch market. Alpha is intended to provide launch options for both full vehicle and ride share customers.",
                     "family": "",
                     "full_name": "Firefly Alpha",
                     "manufacturer": {
@@ -190,7 +190,7 @@ VALID_LAUNCHES_DICT: dict[str, Any] = {
                         "type": "Commercial",
                         "country_code": "USA",
                         "abbrev": "FA",
-                        "description": "Firefly Aerospace is an American private aerospace firm based in Austin, Texas, that develops small and medium-sized launch vehicles for commercial launches to orbit.",  # noqa: E501
+                        "description": "Firefly Aerospace is an American private aerospace firm based in Austin, Texas, that develops small and medium-sized launch vehicles for commercial launches to orbit.",
                         "administrator": "Bill Weber",
                         "founding_year": "2014",
                         "launchers": "",
@@ -245,7 +245,7 @@ VALID_LAUNCHES_DICT: dict[str, Any] = {
             "mission": {
                 "id": 5969,
                 "name": "FLTA005 (Noise of Summer)",
-                "description": "Fourth flight of the Firefly Alpha small sat launcher, carrying eight cubesats for NASA's ELaNa 43 (Educational Launch of a Nanosatellite) mission.",  # noqa: E501
+                "description": "Fourth flight of the Firefly Alpha small sat launcher, carrying eight cubesats for NASA's ELaNa 43 (Educational Launch of a Nanosatellite) mission.",
                 "launch_designator": None,
                 "type": "Technology",
                 "orbit": {"id": 8, "name": "Low Earth Orbit", "abbrev": "LEO"},
@@ -258,7 +258,7 @@ VALID_LAUNCHES_DICT: dict[str, Any] = {
                         "type": "Government",
                         "country_code": "USA",
                         "abbrev": "NASA",
-                        "description": "The National Aeronautics and Space Administration is an independent agency of the executive branch of the United States federal government responsible for the civilian space program, as well as aeronautics and aerospace research. NASA have many launch facilities but most are inactive. The most commonly used pad will be LC-39B at Kennedy Space Center in Florida.",  # noqa: E501
+                        "description": "The National Aeronautics and Space Administration is an independent agency of the executive branch of the United States federal government responsible for the civilian space program, as well as aeronautics and aerospace research. NASA have many launch facilities but most are inactive. The most commonly used pad will be LC-39B at Kennedy Space Center in Florida.",
                         "administrator": "Administrator: Bill Nelson",
                         "founding_year": "1958",
                         "launchers": "Space Shuttle | SLS",
@@ -288,7 +288,7 @@ VALID_LAUNCHES_DICT: dict[str, Any] = {
                 "url": "https://lldev.thespacedevs.com/2.2.0/pad/39/",
                 "agency_id": None,
                 "name": "Space Launch Complex 2W",
-                "description": "SLC-2W was originally used for Delta, Thor-Agena and Delta II launches. After the last Delta II flight in 2018, SLC-2W was repurposed to launch Firefly Alpha rockets.",  # noqa: E501
+                "description": "SLC-2W was originally used for Delta, Thor-Agena and Delta II launches. After the last Delta II flight in 2018, SLC-2W was repurposed to launch Firefly Alpha rockets.",
                 "info_url": None,
                 "wiki_url": "https://en.wikipedia.org/wiki/Vandenberg_Space_Launch_Complex_2",
                 "map_url": "https://www.google.com/maps?q=34.7556,-120.6224",
@@ -315,7 +315,7 @@ VALID_LAUNCHES_DICT: dict[str, Any] = {
                     "priority": 10,
                     "source": "fireflyspace.com",
                     "title": "Noise of Summer",
-                    "description": "Alpha FLTA005 will launch eight CubeSats in support of Firefly’s Venture-Class Launch Services Demo 2 contract with NASA.",  # noqa: E501
+                    "description": "Alpha FLTA005 will launch eight CubeSats in support of Firefly’s Venture-Class Launch Services Demo 2 contract with NASA.",
                     "feature_image": None,
                     "url": "https://fireflyspace.com/missions/noise-of-summer/",
                     "type": {"id": 1, "name": "Official Page"},
@@ -328,7 +328,7 @@ VALID_LAUNCHES_DICT: dict[str, Any] = {
                     "source": "youtube.com",
                     "publisher": "Firefly Aerospace",
                     "title": 'Alpha FLTA005 "Noise of Summer"',
-                    "description": "Alpha FLTA005, a mission called Noise of Summer, supports Firefly’s Venture-Class Launch Services Demo 2 contract with NASA that serves to validate the capab...",  # noqa: E501
+                    "description": "Alpha FLTA005, a mission called Noise of Summer, supports Firefly’s Venture-Class Launch Services Demo 2 contract with NASA that serves to validate the capab...",
                     "feature_image": "https://i.ytimg.com/vi/F6nYZEVsMc0/maxresdefault_live.jpg",
                     "url": "https://www.youtube.com/watch?v=F6nYZEVsMc0",
                     "type": {"id": 1, "name": "Official Webcast"},
@@ -351,7 +351,7 @@ VALID_LAUNCHES_DICT: dict[str, Any] = {
                     "type": {
                         "id": 119,
                         "abbrev": "Payload Segment Preparation",
-                        "description": "Preparation of the payload segment ahead of its mating with the rocket",  # noqa: E501
+                        "description": "Preparation of the payload segment ahead of its mating with the rocket",
                     },
                     "relative_time": "-PT17H30M",
                 },
