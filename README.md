@@ -119,7 +119,7 @@ __Note: An exception will be thrown at startup if there are issues loading or va
 The tool now defaults to using daily scheduling instead of periodic scheduling. The scheduling behavior can be configured with these parameters:
 
 - `"periodic"`: Boolean flag to choose between periodic (true) or daily (false) scheduling. Defaults to `false` (daily scheduling).
-- `"search_window_hours"`: How far ahead in the future to search for launches, in hours. Defaults to 24 hours.
+- `"search_window_hours"`: How far ahead in the future to search for launches, in hours. Defaults to 48 hours.
 - `"search_repeat_hours"`: For periodic scheduling, how often to repeat the checks, in hours. Defaults to 24 hours.
 - `"time_zone"`: IANA timezone string (e.g., "America/Chicago") used for the daily check times. Defaults to "America/Chicago".
 - `"daily_check_times"`: Array of times (in 24-hour "HH:MM" format) to check for launches each day. Defaults to ["07:00", "19:00"].
@@ -141,16 +141,12 @@ Cache configuration parameters:
 - `"cache_directory"`: The directory where the cache file will be stored. Defaults to "./.launches_cache".
 
 ### Notification Services
-The tool supports customizable notification services. At this time the notification services implemented are a `stdout` service, an `email` service, and a `gmail` service. 
-
-_Implementation detail: To add a new notification service. Create a new service class which follows the NotificationService protocol and add a case statement for it to the get_notification_service function in notification_services.py_
+The tool supports customizable notification services. At this time the notification services implemented are a `stdout` service, an SMTP`email` service, and a `gmail` service. 
 
 #### Notification Renders
 The tool supports customizable notification renderers on a per-service basis. At this time the renderers implemented include `plaintext` and `html`. Additional renderers may be added in the future.
 
 If no render is configured `plaintext` will be used.
-
-_Implementation detail: To add a new notification renderer. Create a new renderer class which follows the NotificationRenderer protocol and add a case statement for it to the get_notification_render function in notification_renderers.py_
 
 #### StdOut Notification Service Configuration
 There are no configurable parameters for this service.
@@ -167,7 +163,7 @@ There are no configurable parameters for this service.
 }
 ```
 
-#### Email Notification Service Configuration
+#### SMTP Email Notification Service Configuration
 The following describes the parameters for the email notification service. All parameters are required unless otherwise noted.
  - `"smtp_server"`: The network hostname of a SMTP server which can be used to send emails
  - `"smtp_port"`: The network port of the SMTP server
@@ -184,13 +180,13 @@ The following describes the parameters for the email notification service. All p
             "service": "email",
             "renderer": "plaintext",
             "parameters": {
-                "smtp_server": "smtp-mail.outlook.com",
+                "smtp_server": "smtp.example.com",
                 "smtp_port": 587,
                 "use_tls": true,
-                "smtp_username": "email@outlook.com",  
+                "smtp_username": "email@example.com",  
                 "smtp_password": "base64encodedpassword",
-                "sender": "email@outlook.com",
-                "recipients": ["email@outlook.com"]
+                "sender": "email@example.com",
+                "recipients": ["email@example.com"]
             }
         }
     ]
@@ -207,6 +203,7 @@ The Gmail notification service uses the Google Gmail API to send emails through 
 The following describes the parameters for the Gmail notification service. All parameters are required.
  - `"credentials_file"`: Path to the Google API credentials file (JSON format) obtained from the Google Cloud Console
  - `"token_file"`: Path where the OAuth2 refresh token will be stored after authentication
+ - `"sender"`: Sending email address. Used in the "From:" field of emails.
  - `"recipients"`: A single or list of recipient email addresses. Used in the "To:" field of emails.
 
 ```json
@@ -218,6 +215,7 @@ The following describes the parameters for the Gmail notification service. All p
             "parameters": {
                 "credentials_file": "credentials.json",
                 "token_file": "token.json",
+                "sender": "email@example.com",
                 "recipients": ["email@example.com"]
             }
         }
@@ -253,5 +251,5 @@ More information the LL2 API, and about The Space Devs is here:
  - https://www.patreon.com/TheSpaceDevs
 
 ## License:
-> Copyright ©️ 2024 Scott Cummings </br>
+> Copyright ©️ 2025 Scott Cummings </br>
 > Apache-2.0 OR MIT
