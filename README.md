@@ -107,12 +107,12 @@ __Note: An exception will be thrown at startup if there are issues loading or va
  _The tool can be configured to load and process notifications using the notification handlers from the config file using the `--normal-mode-notif` flag._
 
 ### Notification Services
-The tool supports customizable notification services. At this time the only notification services implemented are a `stdout` service (essentially a dummy service), and an `email` service. Additional notification services could be added in the future. The tool is designed to make doing so require very refactoring.
+The tool supports customizable notification services. At this time the notification services implemented are a `stdout` service, an `email` service, and a `gmail` service. 
 
 _Implementation detail: To add a new notification service. Create a new service class which follows the NotificationService protocol and add a case statement for it to the get_notification_service function in notification_services.py_
 
 #### Notification Renders
-The tool supports customizable notification renderers on a per-service basis. At this time only a `plaintext` render is currently implemented. Additional renderers may be added in the future. The tool is designed to make doing so require little refactoring.
+The tool supports customizable notification renderers on a per-service basis. At this time the renderers implemented include `plaintext` and `html`. Additional renderers may be added in the future.
 
 If no render is configured `plaintext` will be used.
 
@@ -162,6 +162,42 @@ The following describes the parameters for the email notification service. All p
     ]
 }
 ```
+
+#### Gmail Notification Service Configuration
+
+> **Important Note!**
+> The Gmail notification service requires Google API Client credentials that are not provided with this tool. Also, this notification service will ONLY work in a desktop environment as it requires the ability for users to log into their Google account through a browser to obtain a refresh token.
+
+The Gmail notification service uses the Google Gmail API to send emails through a Gmail account. It requires OAuth2 authentication, which is handled by the Google API Client libraries. The first time you run the tool with Gmail notification enabled, it will open a browser window and ask you to authenticate with your Google account.
+
+The following describes the parameters for the Gmail notification service. All parameters are required.
+ - `"credentials_file"`: Path to the Google API credentials file (JSON format) obtained from the Google Cloud Console
+ - `"token_file"`: Path where the OAuth2 refresh token will be stored after authentication
+ - `"recipients"`: A single or list of recipient email addresses. Used in the "To:" field of emails.
+
+```json
+{
+    "notification_handlers": [
+        {
+            "service": "gmail",
+            "renderer": "html",
+            "parameters": {
+                "credentials_file": "credentials.json",
+                "token_file": "token.json",
+                "recipients": ["email@example.com"]
+            }
+        }
+    ]
+}
+```
+
+To use the Gmail notification service, you must:
+1. Create a Google Cloud Platform project
+2. Enable the Gmail API
+3. Create OAuth2 credentials (Desktop client)
+4. Download the credentials as a JSON file and save it as specified in your config
+
+The first time the service runs, it will prompt you to authorize the application by opening a browser window.
 
 ## Space Launch Library 2 (LL2) API:
 This tool makes use of the free-tier of the Space Launch Libary 2 rest API.
