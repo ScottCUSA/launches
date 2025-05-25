@@ -84,13 +84,69 @@ def check_for_upcoming_launches(
         logger.info(f"No upcoming launches found within a {window_hours} hour window.")
 
 
-def check_for_upcoming_launches_scheduled(
+def run_upcoming_launches_daily(
+    search_window_hrs: int,
+    specific_times: list[str],
+    tz: str,
+    notification_handlers: list[NotificationHandler],
+    ll2_client: LaunchLibrary2Client,
+) -> None:
+    """
+    Schedules and runs tasks to check for upcoming rocket launches.
+
+    This function sets up a schedule to check for upcoming launches at specific times
+    each day, using the provided search window and notification handlers. It does NOT
+    perform an immediate check upon invocation.
+
+    Args:
+        search_window_hrs (int): The number of hours ahead to search for upcoming launches.
+        specific_times (list[str]): A list time strings in "HH:MM" format
+        tz (str): The time zone used for scheduling (must be IANA timezone like "America/Chicago")
+        notification_handlers (list[NotificationHandler]): A list of notification handler
+            instances to handle notifications for upcoming launches.
+        ll2_client (LaunchLibrary2Client): An instance of the LaunchLibrary2Client to
+            interact with the launch library API.
+
+    Returns:
+        None
+    """
+    for time_str in specific_times:
+        schedule.every().day.at(time_str, tz).do(
+            check_for_upcoming_launches, search_window_hrs, notification_handlers, ll2_client
+        )
+
+    try:
+        while True:
+            schedule.run_pending()
+            time.sleep(30)
+    except KeyboardInterrupt:
+        return
+
+
+def run_upcoming_launches_periodic(
     window_hours: int,
     repeat_hours: int,
     notification_handlers: list[NotificationHandler],
     ll2_client: LaunchLibrary2Client,
 ) -> None:
-    """run a check for upcoming launches in service mode"""
+    """
+    Periodically checks for upcoming rocket launches and sends notifications.
+
+    This function schedules periodic tasks to check for upcoming rocket launches
+    within a specified time window and sends notifications using the provided
+    notification handlers. It also performs an immediate check upon invocation.
+
+    Args:
+        window_hours (int): The time window (in hours) to look ahead for upcoming launches.
+        repeat_hours (int): The interval (in hours) at which to repeat the periodic checks.
+        notification_handlers (list[NotificationHandler]): A list of notification handlers
+            to process and send notifications for upcoming launches.
+        ll2_client (LaunchLibrary2Client): An instance of the Launch Library 2 client
+            used to fetch launch data.
+
+    Returns:
+        None
+    """
 
     schedule.every(repeat_hours).hours.do(
         check_for_upcoming_launches, window_hours, notification_handlers, ll2_client
@@ -99,6 +155,9 @@ def check_for_upcoming_launches_scheduled(
     # run a check immediately
     check_for_upcoming_launches(window_hours, notification_handlers, ll2_client)
 
-    while True:
-        schedule.run_pending()
-        time.sleep(1)
+    try:
+        while True:
+            schedule.run_pending()
+            time.sleep(30)
+    except KeyboardInterrupt:
+        return

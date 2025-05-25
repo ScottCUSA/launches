@@ -1,4 +1,11 @@
 {
+    "search_window_hours": 24,
+    "search_repeat_hours": 24,
+    "time_zone": "America/Chicago",
+    "daily_check_times": [
+        "07:00",
+        "19:00"
+    ],
     "notification_handlers": [
         {
             "service": "stdout",
@@ -17,6 +24,18 @@
                 "sender": "email@outlook.com",
                 "recipients": [
                     "email@outlook.com"
+                ]
+            }
+        },
+        {
+            "service": "gmail",
+            "renderer": "html",
+            "parameters": {
+                "credentials_file": "credentials.json",
+                "token_file": "token.json",
+                "sender": "email@gmail.com",
+                "recipients": [
+                    "email@example.com"
                 ]
             }
         }

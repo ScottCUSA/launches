@@ -17,17 +17,21 @@ import sys
 from loguru import logger
 
 from launches.config import load_config
-from launches.launches import check_for_upcoming_launches, check_for_upcoming_launches_scheduled
+from launches.launches import (
+    check_for_upcoming_launches,
+    run_upcoming_launches_daily,
+    run_upcoming_launches_periodic,
+)
 from launches.ll2 import LaunchLibrary2Client
 from launches.notifications.handlers import (
     get_notification_handlers,
 )
 
 DEFAULT_CONFIG_PATH = "config.json"
-DEFAULT_REPEAT_HOURS = 24  # number of hours between checks for upcoming launches
-DEFAULT_WINDOW_HOURS = 48  # number of hours in future to check for upcoming launches
-SECONDS_IN_HOUR = 3600  # time between requests in seconds
-REQUEST_ERROR_COOLDOWN = 600  # time between requests if there is an error
+DEFAULT_CHECK_INTERVAL_HOURS = 24  # default hours between checks for periodic upcoming launches
+DEFAULT_FORECAST_WINDOW_HOURS = 72  # default hours in future to check for upcoming launches
+DEFAULT_DAILY_CHECK_TIMES = ["07:00", "19:00"]  # default times to check for upcoming launches
+DEFAULT_TIMEZONE = "America/Chicago"  # default daily schedule timezone
 
 
 def get_env_bool(env_var: str) -> bool:
@@ -72,8 +76,11 @@ def parse_args() -> argparse.Namespace:
         metavar="WINDOW",
         dest="window",
         type=int,
-        help=f"specify the time window to find launches # Default: {DEFAULT_WINDOW_HOURS} hours",
-        default=DEFAULT_WINDOW_HOURS,
+        help=(
+            "specify the time window to find launches "
+            f"# Default: {DEFAULT_FORECAST_WINDOW_HOURS} hours"
+        ),
+        default=DEFAULT_FORECAST_WINDOW_HOURS,
     )
     parser.add_argument(
         "--service",
@@ -86,16 +93,40 @@ def parse_args() -> argparse.Namespace:
         choices=("dev", "prod"),
         dest="env",
         default="prod",
-        help="specify the ll2 environment",
+        help='specify the ll2 environment # Default "prod"',
     )
     arg_group = parser.add_argument_group("service mode arguments")
     arg_group.add_argument(
-        "--repeat",
-        metavar="REPEAT",
+        "--periodic",
+        action="store_true",
+        dest="periodic",
+        help="run checks periodically rather than at specific times",
+    )
+    arg_group.add_argument(
+        "--interval",
+        metavar="INTERVAL",
         type=int,
-        dest="repeat",
-        help=f"specify the frequency of checks # Default: {DEFAULT_REPEAT_HOURS} hours",
-        default=DEFAULT_REPEAT_HOURS,
+        dest="interval",
+        help=f"specify the check inverval (hours) # Default: {DEFAULT_CHECK_INTERVAL_HOURS} hours",
+        default=DEFAULT_CHECK_INTERVAL_HOURS,
+    )
+    arg_group.add_argument(
+        "--times",
+        metavar="TIMES",
+        dest="times",
+        action="append",
+        help=(
+            'specify one or more daily check times format: "HH:MM" '
+            f"# Default: {', '.join(DEFAULT_DAILY_CHECK_TIMES)}"
+        ),
+        default=DEFAULT_DAILY_CHECK_TIMES,
+    )
+    arg_group.add_argument(
+        "--timezone",
+        metavar="TIMEZONE",
+        dest="timezone",
+        help=f"specify the IANA timezone for times # Default: {DEFAULT_TIMEZONE} ",
+        default=DEFAULT_TIMEZONE,
     )
     return parser.parse_args()
 
@@ -127,17 +158,30 @@ def cli():
     window_hours = (
         config.search_window_hours if config.search_window_hours is not None else args.window
     )
-    repeat_hours = (
-        config.search_repeat_hours if config.search_repeat_hours is not None else args.repeat
-    )
+    notification_handlers = get_notification_handlers(config.notification_handlers)
     env = args.env
     ll2_client = LaunchLibrary2Client(env)
 
-    notification_handlers = get_notification_handlers(config.notification_handlers)
-
-    if args.service:
-        check_for_upcoming_launches_scheduled(
-            window_hours, repeat_hours, notification_handlers, ll2_client
-        )
-    else:
+    if not args.service:
         check_for_upcoming_launches(window_hours, notification_handlers, ll2_client)
+        return
+
+    if args.periodic:
+        interval = (
+            config.search_repeat_hours if config.search_repeat_hours is not None else args.interval
+        )
+        logger.info(
+            "Starting periodic launch checks every {} hours with {}h window", interval, window_hours
+        )
+        run_upcoming_launches_periodic(window_hours, interval, notification_handlers, ll2_client)
+    else:
+        times = config.daily_check_times if config.daily_check_times is not None else args.times
+        logger.info(
+            "Starting scheduled launch checks at {} ({}) with {}h window",
+            times,
+            args.timezone,
+            window_hours,
+        )
+        run_upcoming_launches_daily(
+            window_hours, times, args.timezone, notification_handlers, ll2_client
+        )

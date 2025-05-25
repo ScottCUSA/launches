@@ -1,5 +1,5 @@
 # Start from a base image
-FROM python:3.12-alpine as runtime
+FROM ghcr.io/astral-sh/uv:alpine as runtime
 
 # Set a working directory
 WORKDIR /app
@@ -8,7 +8,7 @@ WORKDIR /app
 COPY . .
 
 # Install dependencies
-RUN pip install -r requirements.lock
+RUN uv sync --locked --all-extras
 
 # Set the command to run your application
-CMD ["launches", "--service"]
+CMD ["uv", "run", "launches", "--service"]
