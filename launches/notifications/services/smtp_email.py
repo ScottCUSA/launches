@@ -14,6 +14,8 @@ from loguru import logger
 
 from launches.errors import NotificationError
 
+CONNECT_TIMEOUT = 30
+
 
 class SMTPEmaiLNotificationService:
     """An email notification service which connects to
@@ -37,7 +39,7 @@ class SMTPEmaiLNotificationService:
         self.recipients: list[str] | str = kwargs["recipients"]
         logger.info("Initialized {}", self)
 
-    def get_msg(self, subject: str, body: str, html_body: str | None) -> str:
+    def get_msg(self, subject: str, body: str, html_body: str | None) -> MIMEMultipart | MIMEText:
         """build the message using MIMEText
         return the message as a str"""
         if html_body:
@@ -55,7 +57,39 @@ class SMTPEmaiLNotificationService:
             html = MIMEText(html_body, "html")
             msg.attach(text)
             msg.attach(html)
-        return msg.as_string()
+        return msg
+
+    def _create_smtp_connection(self):
+        """Create and return an SMTP connection as a context manager"""
+        logger.debug("Connecting to SMTP server: {}:{}", self.server, self.port)
+
+        if self.use_tls:
+            logger.debug("Creating SSL context for TLS connection")
+            try:
+                context = ssl.create_default_context()
+            except ssl.SSLError as ex:
+                raise NotificationError("Unable to make secure connection to SMTP server.") from ex
+
+            logger.debug("Connecting with SSL")
+            connection = smtplib.SMTP_SSL(
+                self.server,
+                self.port,
+                local_hostname=self.local_hostname,
+                timeout=CONNECT_TIMEOUT,
+                context=context,
+            )
+        else:
+            logger.debug("Connecting without SSL")
+            connection = smtplib.SMTP(
+                self.server, self.port, local_hostname=self.local_hostname, timeout=CONNECT_TIMEOUT
+            )
+
+        connection.ehlo()
+        if self.username and self.password:
+            logger.debug("Authenticating with username: {}", self.username)
+            connection.login(self.username, self.password)
+
+        return connection
 
     def send(self, subject: str, msg: str, formatted_msg: str | None) -> None:
         """Attempt to connect to SMTP server and send email
@@ -63,33 +97,21 @@ class SMTPEmaiLNotificationService:
         msg must be a valid email message"""
 
         logger.info("Attempting to send email notification")
+        message = self.get_msg(subject, msg, formatted_msg)
 
-        if self.use_tls:
-            try:
-                context = ssl.create_default_context()
-            except ssl.SSLError as ex:
-                raise NotificationError("Unable to make secure connection to SMTP server.") from ex
-        else:
-            context = None
+        logger.debug("Email details - Subject: '{}', To: {}", subject, self.recipients)
 
         try:
-            with smtplib.SMTP(
-                self.server, self.port, local_hostname=self.local_hostname
-            ) as connection:
-                connection.ehlo()
-                if self.use_tls:
-                    connection.starttls(context=context)
-                    # required for some servers
-                    connection.ehlo()
-                if self.username and self.password:
-                    connection.login(self.username, self.password)
-                send_errs = connection.sendmail(
-                    self.sender, self.recipients, self.get_msg(subject, msg, formatted_msg)
-                )
-                if send_errs is not None and len(send_errs):
-                    logger.error("SMTP Send Errors: {}", send_errs)
+            connection = self._create_smtp_connection()
+            logger.debug("Sending email message")
+            send_errs = connection.sendmail(self.sender, self.recipients, message.as_string())
+            if send_errs is not None and len(send_errs):
+                logger.error("SMTP Send Errors: {}", send_errs)
         except (smtplib.SMTPException, ssl.SSLError) as ex:
+            logger.error("SMTP Exception: {}", ex)
             raise NotificationError(f"Unable to send email notification {ex}") from ex
+        finally:
+            connection.close()
 
         logger.info("Successfully sent email notification")
 
