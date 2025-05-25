@@ -1,11 +1,14 @@
 {
-    "search_window_hours": 24,
+    "periodic": false,
+    "search_window_hours": 48,
     "search_repeat_hours": 24,
     "time_zone": "America/Chicago",
     "daily_check_times": [
         "07:00",
         "19:00"
     ],
+    "cache_enabled": true,
+    "cache_directory": "./.launches_cache",
     "notification_handlers": [
         {
             "service": "stdout",

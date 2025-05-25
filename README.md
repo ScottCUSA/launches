@@ -90,13 +90,15 @@ __Note: An exception will be thrown at startup if there are issues loading or va
 ```json
 {
     "periodic": false,
-    "search_window_hours": 24,
+    "search_window_hours": 48,
     "search_repeat_hours": 24,
     "time_zone": "America/Chicago",
     "daily_check_times": [
         "07:00",
         "19:00"
     ],
+    "cache_enabled": true,
+    "cache_directory": "./.launches_cache",
     "notification_handlers": [
         {
             "service": "",
@@ -122,6 +124,21 @@ The tool now defaults to using daily scheduling instead of periodic scheduling. 
 - `"time_zone"`: IANA timezone string (e.g., "America/Chicago") used for the daily check times. Defaults to "America/Chicago".
 - `"daily_check_times"`: Array of times (in 24-hour "HH:MM" format) to check for launches each day. Defaults to ["07:00", "19:00"].
 
+### Cache Configuration:
+
+The tool implements a caching mechanism to avoid sending duplicate notifications for launches that haven't changed since the last check. This is particularly useful in service mode, where checks are performed repeatedly. The cache stores information about previously seen launches and only triggers notifications when new launches are detected or existing launches have significant changes.
+
+A launch is considered to have "significantly changed" if any of the following occurs:
+- The launch status changes (e.g., from "To Be Confirmed" to "Go for Launch")
+- The launch window start time changes
+- New information URLs are added
+- New video URLs are added
+- The "No Earlier Than" (NET) date changes
+
+Cache configuration parameters:
+
+- `"cache_enabled"`: Boolean flag to enable or disable the caching mechanism. Defaults to `true`.
+- `"cache_directory"`: The directory where the cache file will be stored. Defaults to "./.launches_cache".
 
 ### Notification Services
 The tool supports customizable notification services. At this time the notification services implemented are a `stdout` service, an `email` service, and a `gmail` service. 

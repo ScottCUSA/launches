@@ -14,11 +14,12 @@ SPDX-License-Identifier: MIT OR Apache-2.0
 import time
 from collections.abc import Sequence
 from datetime import datetime, timedelta, timezone
-from typing import Any
+from typing import Any, Optional
 
 import schedule
 from loguru import logger
 
+from launches.cache import LaunchCache
 from launches.errors import LaunchesError, NotificationError
 
 from .ll2 import LaunchLibrary2Client
@@ -64,24 +65,42 @@ def check_for_upcoming_launches(
     window_hours: int,
     notification_handlers: Sequence[NotificationHandler],
     ll2_client: LaunchLibrary2Client,
+    cache: Optional[LaunchCache] = None,
 ) -> None:
-    """run a check for upcoming launches"""
+    """Run a check for upcoming launches and send notifications if needed.
+
+    Args:
+        window_hours (int): Time window in hours to look for upcoming launches.
+        notification_handlers (Sequence[NotificationHandler]): Handlers to use for notifications.
+        ll2_client (LaunchLibrary2Client): Client for accessing the Launch Library API.
+        cache (Optional[LaunchCache]): Cache instance to filter unchanged launches.
+            If provided, only changed launches will trigger notifications.
+    """
     logger.info("Checking for upcoming launches within a {} hour window", window_hours)
 
-    from datetime import datetime, timedelta
-
     try:
+        # Get the window end time
         window_start_lt = datetime.now(tz=timezone.utc) + timedelta(hours=window_hours)
+
+        # Get launches from the API
         launches = ll2_client.get_upcoming_launches_within_window(window_start_lt)
+
+        # Filter for changes if cache is enabled
+        if cache is not None:
+            launches = cache.get_changed_launches(launches)
+            logger.info(
+                "Changed launches: {}/{}", launches["count"], "total count from original response"
+            )
     except LaunchesError as ex:
         logger.exception("Exception occured while attempting to get upcoming launches", ex)
         return
 
     if launches["count"] > 0:
-        # render subject and body for notification
+        # Send notification only if there are launches to report
+        logger.info("Found {} launches to report", launches["count"])
         send_notification(launches, notification_handlers)
     else:
-        logger.info(f"No upcoming launches found within a {window_hours} hour window.")
+        logger.info(f"No new or changed launches found within a {window_hours} hour window.")
 
 
 def run_upcoming_launches_daily(
@@ -90,6 +109,7 @@ def run_upcoming_launches_daily(
     tz: str,
     notification_handlers: list[NotificationHandler],
     ll2_client: LaunchLibrary2Client,
+    cache: Optional[LaunchCache] = None,
 ) -> None:
     """
     Schedules and runs tasks to check for upcoming rocket launches.
@@ -106,13 +126,15 @@ def run_upcoming_launches_daily(
             instances to handle notifications for upcoming launches.
         ll2_client (LaunchLibrary2Client): An instance of the LaunchLibrary2Client to
             interact with the launch library API.
+        cache (Optional[LaunchCache], optional): Cache instance to filter unchanged launches.
+            Defaults to None.
 
     Returns:
         None
     """
     for time_str in specific_times:
         schedule.every().day.at(time_str, tz).do(
-            check_for_upcoming_launches, search_window_hrs, notification_handlers, ll2_client
+            check_for_upcoming_launches, search_window_hrs, notification_handlers, ll2_client, cache
         )
 
     try:
@@ -128,6 +150,7 @@ def run_upcoming_launches_periodic(
     repeat_hours: int,
     notification_handlers: list[NotificationHandler],
     ll2_client: LaunchLibrary2Client,
+    cache: Optional[LaunchCache] = None,
 ) -> None:
     """
     Periodically checks for upcoming rocket launches and sends notifications.
@@ -143,17 +166,19 @@ def run_upcoming_launches_periodic(
             to process and send notifications for upcoming launches.
         ll2_client (LaunchLibrary2Client): An instance of the Launch Library 2 client
             used to fetch launch data.
+        cache (Optional[LaunchCache], optional): Cache instance to filter unchanged launches.
+            Defaults to None.
 
     Returns:
         None
     """
 
     schedule.every(repeat_hours).hours.do(
-        check_for_upcoming_launches, window_hours, notification_handlers, ll2_client
+        check_for_upcoming_launches, window_hours, notification_handlers, ll2_client, cache
     )
 
     # run a check immediately
-    check_for_upcoming_launches(window_hours, notification_handlers, ll2_client)
+    check_for_upcoming_launches(window_hours, notification_handlers, ll2_client, cache)
 
     try:
         while True:

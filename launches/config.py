@@ -23,11 +23,14 @@ class NotificationHandlerConfig(BaseModel):
 
 
 class LaunchesConfig(BaseModel):
+    periodic: bool = False
     search_window_hours: int | None = None
     search_repeat_hours: int | None = None
     daily_check_times: list[str] | None = None
     time_zone: str | None = None
     notification_handlers: list[NotificationHandlerConfig]
+    cache_enabled: bool = True
+    cache_directory: str | None = None
 
 
 def load_config(config_path: str) -> LaunchesConfig:

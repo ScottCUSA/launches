@@ -57,7 +57,14 @@ class LaunchLibrary2Client:
     ) -> dict[str, Any]:
         """Make a request to the space launch libary for upcoming launches where the
         window is less than the provided datetime raises a RequestError
-        if there are issues with the request or response"""
+        if there are issues with the request or response.
+
+        Args:
+            window_start_lt (datetime): The cutoff time for the launch window.
+
+        Returns:
+            dict[str, Any]: Dictionary containing launch data.
+        """
         parameters = {
             "window_start__lt": window_start_lt.strftime(LAUNCH_DT_FORMAT),
             "hide_recent_previous": True,
