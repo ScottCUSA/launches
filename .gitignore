@@ -1,6 +1,6 @@
-config.json
-credentials.json
-token.json
+config.json*
+credentials.json*
+token.json*
 
 # Python gitignore template from : https://raw.githubusercontent.com/github/gitignore/main/Python.gitignore
 # Byte-compiled / optimized / DLL files
@@ -168,3 +168,4 @@ cython_debug/
 .vscode/launch.json
 
 .python-version
+.launches_cache
