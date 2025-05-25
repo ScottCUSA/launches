@@ -5,29 +5,37 @@ A tool which checks for upcoming space launches using the space launch library 2
 The tool has two modes:
  - The normal mode performs a check for upcoming launches within a 48 hour window, and outputs any upcoming space launches on the command line.
  - The service mode performs a check for upcoming launches repeatedly, at a configurable schedule, until the user presses `Ctrl+C`. </br>
-   In this mode a notification will be sent via the configured notification services if upcoming launches are found. More on this later.
+
+In either mode notifications will be sent via the configured notification services if upcoming launches are found. More on this later.
 
 The service mode supports two scheduling methods:
  - Daily Scheduling (default): Checks for upcoming launches at specific times each day (e.g., "07:00", "19:00")
  - Periodic Scheduling: Checks for upcoming launches at fixed time intervals (e.g., every 24 hours)
 
-The tool is configurable using command-line arguments. Notification service configurations are loaded from disk from a JSON formated file.
+Configuration options and Notification service configurations are loaded from disk from a JSON formated file. Some options can be overridden with command line arguements as well.
 
 The command line usage of the tool is as follows:
 ```
-$ python project.py --help
-usage: project.py [-h] [-w WINDOW] [--normal-mode-notif] [-d] [--service-mode] [-r REPEAT] [--config CONFIG]
+usage: launches [-h] [-d] [--config CONFIG] [--window WINDOW] [--service] [--env {dev,prod}] [--cache-dir CACHE_DIR] [--no-cache] [--periodic] [--interval INTERVAL] [--times TIMES] [--timezone TIMEZONE]
 
-A tool which checks for upcoming space launches using the free tier of the space launch library 2 API. More information about the API can be found here: https://thespacedevs.com/llapi
+A tool which checks for upcoming space launches using the space launch library API. More information about the API can be found here: https://thespacedevs.com/llapi
 
 options:
-  -h, --help           show this help message and exit
-  -d                   enable debug logging
-  -w WINDOW            find launches within WINDOW hours
-  --normal-mode-notif  send a notification if upcoming launches within WINDOW in normal mode
-  --service-mode       repeatedly check for upcoming launches until user exits with `Ctrl+C`
-  -r REPEAT            repeat checks ever REPEAT hours (service mode only)
-  --config CONFIG      notification service config path default=`config.json`
+  -h, --help            show this help message and exit
+  -d, --debug           enable debug logging
+  --config CONFIG       specify the config file path # Default `config.json`
+  --window WINDOW       specify the time window to find launches # Default: 48 hours
+  --service             run as a service checking for upcoming launches repeatedly
+  --env {dev,prod}      specify the ll2 environment # Default "prod"
+  --cache-dir CACHE_DIR
+                        specify the directory to store cache files # Default: ./
+  --no-cache            disable caching of launch data
+
+service mode arguments:
+  --periodic            run checks periodically rather than at specific times
+  --interval INTERVAL   specify the check inverval (hours) # Default: 24 hours
+  --times TIMES         specify one or more daily check times format: "HH:MM" # Default: 07:00, 19:00
+  --timezone TIMEZONE   specify the IANA timezone for times # Default: America/Chicago
 ```
 
 ### Example Output:
