@@ -23,12 +23,12 @@ def handler():
     return NotificationHandler(renderer, service)
 
 
-def test_send(handler, valid_launches):  # pylint: disable=redefined-outer-name
+def test_send(handler, single_launch):  # pylint: disable=redefined-outer-name
     """send should call the renderer and service"""
-    handler.send(valid_launches)
-    handler.renderer.render_subject.assert_called_once_with(valid_launches)
-    handler.renderer.render_text_body.assert_called_once_with(valid_launches)
-    handler.renderer.render_formatted_body.assert_called_once_with(valid_launches)
+    handler.send(single_launch)
+    handler.renderer.render_subject.assert_called_once_with(single_launch)
+    handler.renderer.render_text_body.assert_called_once_with(single_launch)
+    handler.renderer.render_formatted_body.assert_called_once_with(single_launch)
     handler.service.send.assert_called_once()
 
 

@@ -52,26 +52,26 @@ def test_get_upcoming_launches(mock_client):
     mock_client.return_value.get_upcoming_launches_within_window.assert_called_once()
 
 
-def test_send_notification(valid_launches):
+def test_send_notification(single_launch):
     # setup
     notification_handlers = [MagicMock()]
 
     # test
-    send_notification(valid_launches, notification_handlers)
+    send_notification(single_launch, notification_handlers)
 
     # assert
-    notification_handlers[0].send.assert_called_with(valid_launches)
+    notification_handlers[0].send.assert_called_with(single_launch)
 
 
-def test_send_notification_exception(valid_launches):
+def test_send_notification_exception(single_launch):
     # setup
     notification_handlers = [MagicMock(send=MagicMock(side_effect=NotificationError))]
 
     # test
-    send_notification(valid_launches, notification_handlers)
+    send_notification(single_launch, notification_handlers)
 
     # assert
-    notification_handlers[0].send.assert_called_with(valid_launches)
+    notification_handlers[0].send.assert_called_with(single_launch)
 
 
 @patch("launches.launches.send_notification")

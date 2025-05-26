@@ -147,12 +147,9 @@ def configure_logging(args):
     if args.debug_logging:
         # debugging level override
         logger.add(sys.stderr, level="DEBUG")
-    elif args.service:
+    else:
         # configure info level logging by default in service mode
         logger.add(sys.stderr, level="INFO")
-    else:
-        # configure warning level logging otherwise
-        logger.add(sys.stderr, level="WARNING")
 
 
 def get_search_window(config, args):

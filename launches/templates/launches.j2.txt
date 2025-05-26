@@ -1,8 +1,17 @@
-Upcoming Space Launches:{% for launch in results %}
+Upcoming Space Launches:
 
-Launch {{loop.index}}:
-    Name: {{launch.name}}
-    Status: {{launch.status.name}}
+Summary:{% for launch in results %}
+- {{ launch.launch_service_provider.name }} {{ launch.name }} | {{ launch.status.name }}
+  NET: {{ local_format_time(launch.net) }}
+{% endfor %}
+Details:{% for launch in results %}
+
+- Name: {{launch.name}}
+  Status: {{launch.status.name}}
+
+    No Earlier Than (NET):
+        {{ local_format_time(launch.net) }}
+        {{ format_time(launch.net) }}{% if launch.window_start %}
 
     Launch Window:
         Start:
@@ -10,7 +19,7 @@ Launch {{loop.index}}:
             {{ format_time(launch.window_start) }}
         End:
             {{ local_format_time(launch.window_end) }}
-            {{ format_time(launch.window_end) }}
+            {{ format_time(launch.window_end) }}{% endif %}
 
     Launch Service Provider:
         Name: {{launch.launch_service_provider.name}}
@@ -30,5 +39,4 @@ Launch {{loop.index}}:
     Launch Pad:
         Name: {{launch.pad.name}}
         Location: {{launch.pad.location.name}}
-
-{% endfor %}
+{%- endfor %}
