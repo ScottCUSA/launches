@@ -4,89 +4,205 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Upcoming Space Launches</title>
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        .header {
+            background-color: #181c3a;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .launch-summary {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .launch-item {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .launch-header {
+            background-color: #181c3a;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+        .launch-detail {
+            background-color: #f7f7f7;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        .section-title {
+            margin-top: 10px;
+            color: #181c3a;
+            font-weight: bold;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 5px;
+            margin-bottom: 10px;
+        }
+        .info-links a, .video-links a {
+            display: inline-block;
+            margin: 5px 0;
+            color: #0066cc;
+            text-decoration: none;
+        }
+        .info-links a:hover, .video-links a:hover {
+            text-decoration: underline;
+        }
+        .launch-time {
+            color: #e64a19;
+            font-weight: bold;
+        }
+        .launch-status {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 3px;
+            background-color: #FFA500; /* Default amber/orange color for all statuses */
+            color: white;
+            font-size: 0.9em;
+        }
+        .launch-status-go {
+            background-color: #4caf50; /* Green color specifically for "Go For Launch" status */
+        }
+        ul.time-list {
+            padding-left: 0;
+            list-style-type: none;
+        }
+        ul.time-list li {
+            padding: 8px 0;
+        }
+        .mission-info {
+            background-color: #e8f5e9;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        .rocket-info, .provider-info, .pad-info, .agency-info {
+            margin-bottom: 10px;
+        }
+    </style>
 </head>
 <body>
-    <h3>Summary</h3>
-    <div>
+    <div class="header">
+        <h1>Upcoming Space Launches</h1>
+    </div>
+
+    <div class="launch-summary">
+        <h2 class="section-title">Launch Summary</h2>
         <ul>
             {% for launch in results -%}
             <li>
-                <strong>Launch {{ loop.index }}:</strong><br>
-                {{ launch.launch_service_provider.name }} {{ launch.name }} | {{ launch.status.name }}<br>
-                {{ local_format_time(launch.net) }} | {{ format_time(launch.net) }}
+                <strong>{{ launch.launch_service_provider.name }} {{ launch.name }}</strong> | <span class="launch-status{% if launch.status.name == 'Go for Launch' %} launch-status-go{% endif %}">{{ launch.status.name }}</span><br>
+                <span class="launch-time">NET: {{ local_format_time(launch.net) }} </span>
             </li>
-        {% endfor -%}
+            {% endfor -%}
         </ul>
     </div>
-    <h3>Upcoming Space Launches</h3>
+
     {% for launch in results -%}
-    <div style="padding-left: 20px;">
-        <h4>Launch {{ loop.index }}:</h4>
-        <div style="padding-left: 30px;">
-            <p>
-                <strong>Name:</strong> {{ launch.name }}<br>
-                <strong>Status:</strong> {{ launch.status.name }}
-            </p>
-            <strong>Launch Window</strong><br>
-            <ul>
+    <div class="launch-item">
+        <div class="launch-header">
+            <h2>{{ launch.name }}</h2>
+            <div><span class="launch-status{% if launch.status.name == 'Go for Launch' %} launch-status-go{% endif %}">{{ launch.status.name }}</span></div>
+        </div>
+
+        <div class="launch-detail">
+            <h3 class="section-title">Launch Window</h3>
+            <ul class="time-list">
+                <li>
+                    <strong>NET (No Earlier Than):</strong><br>
+                    <span class="launch-time">{{ local_format_time(launch.net) }}</span><br>
+                    <span class="launch-time">{{ format_time(launch.net) }}</span>
+                </li>{% if launch.window_start != None %}
                 <li>
                     <strong>Start:</strong><br>
-                    {{ local_format_time(launch.window_start) }}<br>
-                    {{ format_time(launch.window_start) }}
+                    <span class="launch-time">{{ local_format_time(launch.window_start) }}</span><br>
+                    <span class="launch-time">{{ format_time(launch.window_start) }}</span>
                 </li>
                 <li>
                     <strong>End:</strong><br>
-                    {{ local_format_time(launch.window_end) }}<br>
-                    {{ format_time(launch.window_end) }}
-                </li>
+                    <span class="launch-time">{{ local_format_time(launch.window_end) }}</span><br>
+                    <span class="launch-time">{{ format_time(launch.window_end) }}</span>
+                </li>{% endif %}
             </ul>
-            <p>
-                <strong>Launch Service Provider:</strong><br>
-                Name: {{ launch.launch_service_provider.name }}<br>
-                Type: {{ launch.launch_service_provider.type }}
-            </p>
-            <p>
-                <strong>Rocket:</strong> {{ launch.rocket.configuration.full_name }}
-            </p>
-            <p>
-                <strong>Mission:</strong><br>
-                Name: {{ launch.mission.name }}<br>
-                Description: {{ launch.mission.description }}<br>
-                Orbit: {{ launch.mission.orbit.name }}
-            </p>
+        </div>
+
+        <div class="mission-info">
+            <h3 class="section-title">Mission</h3>
+            <p><strong>Name:</strong> {{ launch.mission.name }}</p>
+            <p><strong>Description:</strong> {{ launch.mission.description }}</p>
+            <p><strong>Orbit:</strong> {{ launch.mission.orbit.name }}</p>
+            
             {%- if launch.mission.agencies | length -%}
-            <p>
-                <strong>Agencies:</strong><br>
+            <div class="agency-info">
+                <h3 class="section-title">Agencies</h3>
                 {% for agency in launch.mission.agencies -%}
-                Name: {{ agency.name }}<br>
-                Type: {{ agency.type }}<br>
-                Country: {{ agency.country_code }}<br>
-            {% endfor -%}
-            </p>
+                <p>
+                    <strong>Name:</strong> {{ agency.name }}<br>
+                    <strong>Type:</strong> {{ agency.type }}<br>
+                    <strong>Country:</strong> {{ agency.country_code }}
+                </p>
+                {% endfor -%}
+            </div>
             {% endif -%}
+        </div>
+
+        <div class="rocket-info">
+            <h3 class="section-title">Rocket</h3>
+            <p>{{ launch.rocket.configuration.full_name }}</p>
+        </div>
+
+        <div class="provider-info">
+            <h3 class="section-title">Launch Service Provider</h3>
             <p>
-                <strong>Launch Pad:</strong><br>
-                Name: {{ launch.pad.name }}<br>
-                Location: {{ launch.pad.location.name }}
-            </p>
-            {%- if launch.infoURLs | length -%}
-            <p>
-                <strong>Info Urls:</strong><br>
-                {% for url in launch.infoURLs -%}
-                <a href="{{url.url}}" target="_blank">{{url.title}}</a><br>
-            {% endfor -%}
-            </p>
-            {% endif %}
-            {%- if launch.vidURLs | length -%}
-            <p>
-                <strong>Video Urls:</strong><br>
-                {% for url in launch.vidURLs -%}
-                <a href="{{url.url}}" target="_blank">{{url.title}}</a><br>
-            {% endfor -%}
+                <strong>Name:</strong> {{ launch.launch_service_provider.name }}<br>
+                <strong>Type:</strong> {{ launch.launch_service_provider.type }}
             </p>
         </div>
-    {% endif -%}
+
+        <div class="pad-info">
+            <h3 class="section-title">Launch Pad</h3>
+            <p>
+                <strong>Name:</strong> {{ launch.pad.name }}<br>
+                <strong>Location:</strong> {{ launch.pad.location.name }}
+            </p>
+        </div>
+
+        {%- if launch.infoURLs | length -%}
+        <div class="info-links">
+            <h3 class="section-title">Information</h3>
+            {% for url in launch.infoURLs -%}
+            <p><a href="{{ url.url }}" target="_blank">{{ url.title }}</a></p>
+            {% endfor -%}
+        </div>
+        {% endif %}
+
+        {%- if launch.vidURLs | length -%}
+        <div class="video-links">
+            <h3 class="section-title">Live Broadcasts</h3>
+            {% for url in launch.vidURLs -%}
+            <p><a href="{{ url.url }}" target="_blank">{{ url.title }}</a></p>
+            {% endfor -%}
+        </div>
+        {% endif -%}
     </div>
-{% endfor -%}
+    {% endfor -%}
 </body>
 </html>

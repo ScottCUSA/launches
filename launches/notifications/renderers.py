@@ -18,7 +18,9 @@ JINJA_ENV = Environment(
 )
 TXT_TEMPLATE = "launches.j2.txt"
 HTML_TEMPLATE = "launches.j2.html"
+SUBJECT_TEMPLATE = "subject.j2"
 BODY_TZ = "US/Central"
+SUBJECT_DT_FORMAT = "%d %b %Y %H:%M %Z"
 BODY_DT_FORMAT = "%a %b %d %Y %H:%M %Z"
 
 
@@ -41,12 +43,21 @@ class NotificationRenderer(Protocol):
 class JinjaRenderer:
     """Render a Launch Notification Using Text"""
 
-    def __init__(self, text_template=TXT_TEMPLATE, formatted_template: str | None = None):
+    def __init__(
+        self,
+        text_template=TXT_TEMPLATE,
+        formatted_template: str | None = None,
+        subject_template: str | None = SUBJECT_TEMPLATE,
+    ):
         self.text_renderer = JINJA_ENV.get_template(text_template)
         if formatted_template is not None:
             self.formatted_renderer: Template | None = JINJA_ENV.get_template(formatted_template)
         else:
             self.formatted_renderer = None
+        if subject_template is None:
+            self.subject_renderer = JINJA_ENV.get_template(SUBJECT_TEMPLATE)
+        else:
+            self.subject_renderer = JINJA_ENV.get_template(subject_template)
         logger.info(
             "Initialized JinjaRender with text_template: {}, formatted_template: {}",
             text_template,
@@ -55,7 +66,7 @@ class JinjaRenderer:
 
     def render_subject(self, launches: dict[str, Any]) -> str:
         """render text subject"""
-        return f"Notification for {launches['count']} Upcoming Space Launch(es)"
+        return self.subject_renderer.render({"now": subject_local_now(), "launches": launches})
 
     def render_text_body(self, launches: dict[str, Any]) -> str:
         """render text body"""
@@ -102,6 +113,12 @@ def local_format_time(iso_time: str) -> str:
     dt_offset = dt.astimezone(ZoneInfo(BODY_TZ))
     # output datetime in template format
     return dt_offset.strftime(BODY_DT_FORMAT)
+
+
+def subject_local_now() -> str:
+    dt = datetime.now(ZoneInfo(BODY_TZ))
+    # output datetime in template format
+    return dt.strftime(SUBJECT_DT_FORMAT)
 
 
 def format_time(iso_time: str) -> str:
