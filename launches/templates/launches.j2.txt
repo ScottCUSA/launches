@@ -1,34 +1,39 @@
+Summary:{% for launch in results %}
+    Launch {{loop.index}}:
+      - {{ launch.launch_service_provider.name }} {{ launch.name }} | {{ launch.status.name }}
+      - {{ local_format_time(launch.net) }} | {{ format_time(launch.net) }}
+{% endfor %}
 Upcoming Space Launches:{% for launch in results %}
 
-Launch {{loop.index}}:
-    Name: {{launch.name}}
-    Status: {{launch.status.name}}
+    Launch {{loop.index}}:
+        Name: {{launch.name}}
+        Status: {{launch.status.name}}
 
-    Launch Window:
-        Start:
-            {{ local_format_time(launch.window_start) }}
-            {{ format_time(launch.window_start) }}
-        End:
-            {{ local_format_time(launch.window_end) }}
-            {{ format_time(launch.window_end) }}
+        Launch Window:
+            Start:
+                {{ local_format_time(launch.window_start) }}
+                {{ format_time(launch.window_start) }}
+            End:
+                {{ local_format_time(launch.window_end) }}
+                {{ format_time(launch.window_end) }}
 
-    Launch Service Provider:
-        Name: {{launch.launch_service_provider.name}}
-        Type: {{launch.launch_service_provider.type}}
+        Launch Service Provider:
+            Name: {{launch.launch_service_provider.name}}
+            Type: {{launch.launch_service_provider.type}}
 
-    Rocket:
-        Name: {{launch.rocket.configuration.full_name}}
+        Rocket:
+            Name: {{launch.rocket.configuration.full_name}}
 
-    Mission:
-        Name: {{launch.mission.name}}
-        Description: {{launch.mission.description}}
-        Orbit: {{launch.mission.orbit.name}}
-        Agencies:{% for agency in launch.mission.agencies %}
-            Name: {{agency.name}}
-            Type: {{agency.type}}
-            Country: {{agency.country_code}}{% endfor %}
-    Launch Pad:
-        Name: {{launch.pad.name}}
-        Location: {{launch.pad.location.name}}
+        Mission:
+            Name: {{launch.mission.name}}
+            Description: {{launch.mission.description}}
+            Orbit: {{launch.mission.orbit.name}}
+            Agencies:{% for agency in launch.mission.agencies %}
+                Name: {{agency.name}}
+                Type: {{agency.type}}
+                Country: {{agency.country_code}}{% endfor %}
+        Launch Pad:
+            Name: {{launch.pad.name}}
+            Location: {{launch.pad.location.name}}
+{%- endfor %}
 
-{% endfor %}

@@ -19,7 +19,7 @@ JINJA_ENV = Environment(
 TXT_TEMPLATE = "launches.j2.txt"
 HTML_TEMPLATE = "launches.j2.html"
 BODY_TZ = "US/Central"
-BODY_DT_FORMAT = "%a %b %d %Y %X %Z"
+BODY_DT_FORMAT = "%a %b %d %Y %H:%M %Z"
 
 
 class NotificationRenderer(Protocol):

@@ -6,69 +6,85 @@
     <title>Upcoming Space Launches</title>
 </head>
 <body>
-    <h1>Upcoming Space Launches</h1>
-{% for launch in results %}
+    <h3>Summary</h3>
     <div>
-        <h2>Launch {{ loop.index }}:</h2>
-        <p>
-            <strong>Name:</strong> {{ launch.name }}<br>
-            <strong>Status:</strong> {{ launch.status.name }}
-        </p>
-        <strong>Launch Window</strong><br>
         <ul>
+            {% for launch in results -%}
             <li>
-                <strong>Start:</strong><br>
-                {{ local_format_time(launch.window_start) }}<br>
-                {{ format_time(launch.window_start) }}
+                <strong>Launch {{ loop.index }}:</strong><br>
+                {{ launch.launch_service_provider.name }} {{ launch.name }} | {{ launch.status.name }}<br>
+                {{ local_format_time(launch.net) }} | {{ format_time(launch.net) }}
             </li>
-            <li>
-                <strong>End:</strong><br>
-                {{ local_format_time(launch.window_end) }}<br>
-                {{ format_time(launch.window_end) }}
-            </li>
+        {% endfor -%}
         </ul>
-        <p>
-            <strong>Launch Service Provider:</strong><br>
-            Name: {{ launch.launch_service_provider.name }}<br>
-            Type: {{ launch.launch_service_provider.type }}
-        </p>
-        <p>
-            <strong>Rocket:</strong> {{ launch.rocket.configuration.full_name }}
-        </p>
-        <p>
-            <strong>Mission:</strong><br>
-            Name: {{ launch.mission.name }}<br>
-            Description: {{ launch.mission.description }}<br>
-            Orbit: {{ launch.mission.orbit.name }}
-        </p>
-        <p>
-            <strong>Agencies:</strong><br>
-            {% for agency in launch.mission.agencies -%}
-            Name: {{ agency.name }}<br>
-            Type: {{ agency.type }}<br>
-            Country: {{ agency.country_code }}<br>
-        {% endfor -%}
-        </p>
-        <p>
-            <strong>Launch Pad:</strong><br>
-            Name: {{ launch.pad.name }}<br>
-            Location: {{ launch.pad.location.name }}
-        </p>
-        {% if launch.infoURLs|length > 0 -%}
-        <p>
-            <strong>Info Urls:</strong><br>
-            {% for url in launch.infoURLs -%}
-              <a href="{{url.url}}" target="_blank">{{url.title}}</a><br>
-        {% endfor -%}
-        </p>
-        {% endif -%}
-        {% if launch.vidURLs|length > 0 -%}
-        <p>
-            <strong>Video Urls:</strong><br>
-            {% for url in launch.vidURLs -%}
-              <a href="{{url.url}}" target="_blank">{{url.title}}</a><br>
-        {% endfor -%}
-        </p>
+    </div>
+    <h3>Upcoming Space Launches</h3>
+    {% for launch in results -%}
+    <div style="padding-left: 20px;">
+        <h4>Launch {{ loop.index }}:</h4>
+        <div style="padding-left: 30px;">
+            <p>
+                <strong>Name:</strong> {{ launch.name }}<br>
+                <strong>Status:</strong> {{ launch.status.name }}
+            </p>
+            <strong>Launch Window</strong><br>
+            <ul>
+                <li>
+                    <strong>Start:</strong><br>
+                    {{ local_format_time(launch.window_start) }}<br>
+                    {{ format_time(launch.window_start) }}
+                </li>
+                <li>
+                    <strong>End:</strong><br>
+                    {{ local_format_time(launch.window_end) }}<br>
+                    {{ format_time(launch.window_end) }}
+                </li>
+            </ul>
+            <p>
+                <strong>Launch Service Provider:</strong><br>
+                Name: {{ launch.launch_service_provider.name }}<br>
+                Type: {{ launch.launch_service_provider.type }}
+            </p>
+            <p>
+                <strong>Rocket:</strong> {{ launch.rocket.configuration.full_name }}
+            </p>
+            <p>
+                <strong>Mission:</strong><br>
+                Name: {{ launch.mission.name }}<br>
+                Description: {{ launch.mission.description }}<br>
+                Orbit: {{ launch.mission.orbit.name }}
+            </p>
+            {%- if launch.mission.agencies | length -%}
+            <p>
+                <strong>Agencies:</strong><br>
+                {% for agency in launch.mission.agencies -%}
+                Name: {{ agency.name }}<br>
+                Type: {{ agency.type }}<br>
+                Country: {{ agency.country_code }}<br>
+            {% endfor -%}
+            </p>
+            {% endif -%}
+            <p>
+                <strong>Launch Pad:</strong><br>
+                Name: {{ launch.pad.name }}<br>
+                Location: {{ launch.pad.location.name }}
+            </p>
+            {%- if launch.infoURLs | length -%}
+            <p>
+                <strong>Info Urls:</strong><br>
+                {% for url in launch.infoURLs -%}
+                <a href="{{url.url}}" target="_blank">{{url.title}}</a><br>
+            {% endfor -%}
+            </p>
+            {% endif %}
+            {%- if launch.vidURLs | length -%}
+            <p>
+                <strong>Video Urls:</strong><br>
+                {% for url in launch.vidURLs -%}
+                <a href="{{url.url}}" target="_blank">{{url.title}}</a><br>
+            {% endfor -%}
+            </p>
+        </div>
     {% endif -%}
     </div>
 {% endfor -%}
