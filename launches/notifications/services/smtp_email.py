@@ -64,19 +64,9 @@ class SMTPEmaiLNotificationService:
         logger.debug("Connecting to SMTP server: {}:{}", self.server, self.port)
 
         if self.use_tls:
-            logger.debug("Creating SSL context for TLS connection")
-            try:
-                context = ssl.create_default_context()
-            except ssl.SSLError as ex:
-                raise NotificationError("Unable to make secure connection to SMTP server.") from ex
-
             logger.debug("Connecting with SSL")
             connection = smtplib.SMTP_SSL(
-                self.server,
-                self.port,
-                local_hostname=self.local_hostname,
-                timeout=CONNECT_TIMEOUT,
-                context=context,
+                self.server, self.port, local_hostname=self.local_hostname, timeout=CONNECT_TIMEOUT
             )
         else:
             logger.debug("Connecting without SSL")
