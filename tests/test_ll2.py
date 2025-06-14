@@ -9,7 +9,7 @@ from datetime import datetime, timezone
 from unittest.mock import MagicMock, patch
 
 import pytest
-import requests
+import requests.exceptions
 
 from launches.ll2 import LL2_API_URL, LaunchLibrary2Client, LL2RequestError
 

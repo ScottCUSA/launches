@@ -8,7 +8,7 @@ import json
 from datetime import datetime
 from typing import Any
 
-import requests
+import requests.exceptions
 from loguru import logger
 
 from launches.errors import LL2RequestError

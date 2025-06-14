@@ -5,9 +5,11 @@ SPDX-License-Identifier: MIT OR Apache-2.0
 """
 
 import base64
-from unittest.mock import patch
+
+import pytest
 
 from launches.config import NotificationHandlerConfig
+from launches.errors import ConfigError
 from launches.notifications.services import (
     SMTPEmaiLNotificationService,
     StdOutNotificationService,
@@ -19,11 +21,9 @@ def test_get_notification_service_stdout():
     """get_notification_service should return a StdOutNotificationService if service is stdout"""
     service_config = NotificationHandlerConfig(service="stdout", renderer="text", parameters={})
 
-    with patch("sys.exit") as mock_exit:
-        notification_service = get_notification_service(service_config)
+    notification_service = get_notification_service(service_config)
 
     assert isinstance(notification_service, StdOutNotificationService)
-    assert mock_exit.call_count == 0
 
 
 def test_get_notification_service_email():
@@ -42,22 +42,18 @@ def test_get_notification_service_email():
         },
     )
 
-    with patch("sys.exit") as mock_exit:
-        notification_service = get_notification_service(service_config)
+    notification_service = get_notification_service(service_config)
 
     assert isinstance(notification_service, SMTPEmaiLNotificationService)
-    assert mock_exit.call_count == 0
 
 
 def test_get_notification_service_unknown_service():
-    """get_notification_service should exit if service is unknown"""
+    """get_notification_service should raise ValueError if service is unknown"""
     service_config = NotificationHandlerConfig(
         service="unknown",
         renderer="text",
         parameters={},
     )
 
-    with patch("sys.exit") as mock_exit:
+    with pytest.raises(ConfigError):
         get_notification_service(service_config)
-
-    assert mock_exit.call_count == 1

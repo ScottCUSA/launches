@@ -6,8 +6,8 @@ SPDX-License-Identifier: MIT OR Apache-2.0
 
 from datetime import datetime, timezone
 from typing import Any, Protocol
-from zoneinfo import ZoneInfo
 
+import pytz
 from jinja2 import Environment, PackageLoader, Template, select_autoescape
 from loguru import logger
 
@@ -109,14 +109,16 @@ def local_format_time(iso_time: str) -> str:
         return ""
     # set timezone to UTC
     dt = dt.replace(tzinfo=timezone.utc)
-    # change timezone
-    dt_offset = dt.astimezone(ZoneInfo(BODY_TZ))
+    # change timezone using pytz
+    tz = pytz.timezone(BODY_TZ)
+    dt_offset = dt.astimezone(tz)
     # output datetime in template format
     return dt_offset.strftime(BODY_DT_FORMAT)
 
 
 def subject_local_now() -> str:
-    dt = datetime.now(ZoneInfo(BODY_TZ))
+    tz = pytz.timezone(BODY_TZ)
+    dt = datetime.now(tz)
     # output datetime in template format
     return dt.strftime(SUBJECT_DT_FORMAT)
 

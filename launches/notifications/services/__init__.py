@@ -4,12 +4,12 @@ Copyright ©️ 2025 Scott Cummings
 SPDX-License-Identifier: MIT OR Apache-2.0
 """
 
-import sys
 from typing import Protocol
 
 from loguru import logger
 
 from launches.config import NotificationHandlerConfig
+from launches.errors import ConfigError, LaunchesError
 from launches.notifications.services.gmail import GmailNotificationService
 from launches.notifications.services.smtp_email import SMTPEmaiLNotificationService
 from launches.notifications.services.stdout import StdOutNotificationService
@@ -61,7 +61,7 @@ def get_notification_service(
                     "Unknown notification service {}",
                     service_config.service,
                 )
-                sys.exit(1)
+                raise ConfigError(f"Unknown notification service {service_config.service}")
     except (ValueError, TypeError, KeyError) as ex:
         logger.error("Unable to load notification service: {}", ex)
-        sys.exit(1)
+        raise LaunchesError(f"Unable to load notificatioin service {ex}") from ex
